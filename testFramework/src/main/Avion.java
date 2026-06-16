@@ -1,0 +1,7 @@
+import com.framework.annotation.JsonSerializable;
+
+
+@JsonSerializable
+public class Avion {
+    
+}
