@@ -1,3 +1,6 @@
+package valisoa;
+
+
 import com.framework.annotation.JsonSerializable;
 
 
