@@ -18,7 +18,6 @@ public class FrontControllerServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-
         System.out.println("=== INIT FRAMEWORK ===");
 
         try {
@@ -29,25 +28,13 @@ public class FrontControllerServlet extends HttpServlet {
             List<Class<?>> toutesLesClasses = scanClasses(new java.io.File(rootPath), "");
 
             for (Class<?> clazz : toutesLesClasses) {
+                for (java.lang.annotation.Annotation annotation : clazz.getAnnotations()) {
+                    if (annotation.annotationType().getName()
+                            .equals("com.framework.annotation.JsonSerializable")) {
 
-                // 1. Vérifier la présence de l'annotation
-                if (clazz.isAnnotationPresent(JsonSerializable.class)) {
-
-                    classAnnote.add(clazz);
-
-                    // 2. Lire la valeur de nomFichier via réflexion
-                    JsonSerializable annotation = clazz.getAnnotation(JsonSerializable.class);
-                    String fichier = annotation.nomFichier();
-
-                    // 3. Lister les champs via réflexion
-                    java.lang.reflect.Field[] champs = clazz.getDeclaredFields();
-
-                    System.out.println("Classe annotée : " + clazz.getName());
-                    System.out.println("  → fichier JSON : " + fichier);
-                    System.out.println("  → nombre de champs : " + champs.length);
-
-                    for (java.lang.reflect.Field champ : champs) {
-                        System.out.println("     - " + champ.getName() + " (" + champ.getType().getSimpleName() + ")");
+                        classAnnote.add(clazz);
+                        System.out.println("Classe annotée : " + clazz.getName());
+                        break;
                     }
                 }
             }
@@ -60,14 +47,13 @@ public class FrontControllerServlet extends HttpServlet {
     }
 
     // ===== SCANNER LES CLASSES =====
-    private List<Class<?>> scanClasses(java.io.File dir, String packageName) {
+    private List<Class<?>> scanClasses(java.io.File dir, String packageName)
+            throws ClassNotFoundException {
 
         List<Class<?>> classes = new ArrayList<>();
         java.io.File[] files = dir.listFiles();
         if (files == null)
             return classes;
-
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
 
         for (java.io.File file : files) {
             if (file.isDirectory()) {
@@ -81,18 +67,13 @@ public class FrontControllerServlet extends HttpServlet {
                         ? file.getName().replace(".class", "")
                         : packageName + "." + file.getName().replace(".class", "");
                 try {
-                    Class<?> clazz = Class.forName(className, true, cl); // ✅
-                    classes.add(clazz);
+                    classes.add(Class.forName(className));
                 } catch (ClassNotFoundException | NoClassDefFoundError e) {
                     System.out.println("Ignorée : " + className);
                 }
             }
         }
         return classes;
-    }
-
-    return classes;
-
     }
 
     protected void processRequest(HttpServletRequest request,

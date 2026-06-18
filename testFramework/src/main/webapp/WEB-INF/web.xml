@@ -8,10 +8,8 @@
 
     <servlet>
         <servlet-name>FrontController</servlet-name>
-
-        <servlet-class>
-            com.framework.servlet.FrontControllerServlet
-        </servlet-class>
+        <servlet-class>com.framework.servlet.FrontControllerServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>  <!-- ← ajouter -->
     </servlet>
 
     <servlet-mapping>
