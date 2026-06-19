@@ -26,7 +26,28 @@ public class FrontControllerServlet extends HttpServlet {
                 throw new ServletException("Chemin WEB-INF/classes introuvable");
 
             List<Class<?>> toutesLesClasses = scanClasses(new java.io.File(rootPath), "");
+protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        out.println("<h1>Mini Spring</h1>");
+        out.println("<p>URL : " + request.getRequestURI() + "</p>");
+        out.println("<p>Methode : " + request.getMethod() + "</p>");
+
+        // 1. Log de contrôle pour voir si cette ligne s'exécute
+        out.println("<h2>Classes annotées (Taille de la liste : " + classAnnote.size() + ") :</h2>");
+
+        if (classAnnote.isEmpty()) {
+            out.println(
+                    "<p style='color:red;'>Aucune classe n'a été trouvée dans la liste lors de l'initialisation.</p>");
+        }
+
+        for (Class<?> c : classAnnote) {
+            out.println("<p>Trouvée : " + c.getName() + "</p>");
+        }
+    }
             // Utilisation directe de isAnnotationPresent pour plus de robustesse
             for (Class<?> clazz : toutesLesClasses) {
                 if (clazz.isAnnotationPresent(JsonSerializable.class)) {
