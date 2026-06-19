@@ -1,8 +1,8 @@
-package valisoa;
+package controller;
 
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class B {
+public class C {
     
 }
