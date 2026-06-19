@@ -2,6 +2,7 @@ package com.framework.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.ModuleLayer.Controller;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class FrontControllerServlet extends HttpServlet {
 
             // Utilisation directe de isAnnotationPresent pour plus de robustesse
             for (Class<?> clazz : toutesLesClasses) {
-                if (clazz.isAnnotationPresent(JsonSerializable.class)) {
+                if (clazz.isAnnotationPresent(org.springframework.stereotype.Controller.class)) {
                     classAnnote.add(clazz);
                     System.out.println("Classe annotée : " + clazz.getName());
                 }
