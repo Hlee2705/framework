@@ -27,15 +27,11 @@ public class FrontControllerServlet extends HttpServlet {
 
             List<Class<?>> toutesLesClasses = scanClasses(new java.io.File(rootPath), "");
 
+            // Utilisation directe de isAnnotationPresent pour plus de robustesse
             for (Class<?> clazz : toutesLesClasses) {
-                for (java.lang.annotation.Annotation annotation : clazz.getAnnotations()) {
-                    if (annotation.annotationType().getName()
-                            .equals("com.framework.annotation.JsonSerializable")) {
-
-                        classAnnote.add(clazz);
-                        System.out.println("Classe annotée : " + clazz.getName());
-                        break;
-                    }
+                if (clazz.isAnnotationPresent(JsonSerializable.class)) {
+                    classAnnote.add(clazz);
+                    System.out.println("Classe annotée : " + clazz.getName());
                 }
             }
 
@@ -67,7 +63,10 @@ public class FrontControllerServlet extends HttpServlet {
                         ? file.getName().replace(".class", "")
                         : packageName + "." + file.getName().replace(".class", "");
                 try {
-                    classes.add(Class.forName(className));
+                    // Utilisation du ClassLoader du thread actuel pour éviter les échecs de
+                    // chargement latents
+                    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+                    classes.add(Class.forName(className, true, contextClassLoader));
                 } catch (ClassNotFoundException | NoClassDefFoundError e) {
                     System.out.println("Ignorée : " + className);
                 }
@@ -76,22 +75,45 @@ public class FrontControllerServlet extends HttpServlet {
         return classes;
     }
 
-    protected void processRequest(HttpServletRequest request,
-            HttpServletResponse response)
+    // protected void processRequest(HttpServletRequest request,
+    // HttpServletResponse response)
+    // throws ServletException, IOException {
+
+    // response.setContentType("text/html");
+
+    // PrintWriter out = response.getWriter();
+
+    // out.println("<h1>Mini Spring</h1>");
+    // out.println("<p>URL : " + request.getRequestURI() + "</p>");
+    // out.println("<p>Methode : " + request.getMethod() + "</p>");
+
+    // out.println("<h2>Classes annotées :</h2>");
+
+    // for (Class<?> c : classAnnote) {
+    // out.println("<p>" + c.getName() + "</p>");
+    // }
+    // }
+
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         response.setContentType("text/html");
-
         PrintWriter out = response.getWriter();
 
         out.println("<h1>Mini Spring</h1>");
         out.println("<p>URL : " + request.getRequestURI() + "</p>");
         out.println("<p>Methode : " + request.getMethod() + "</p>");
 
-        out.println("<h2>Classes annotées :</h2>");
+        // 1. Log de contrôle pour voir si cette ligne s'exécute
+        out.println("<h2>Classes annotées (Taille de la liste : " + classAnnote.size() + ") :</h2>");
+
+        if (classAnnote.isEmpty()) {
+            out.println(
+                    "<p style='color:red;'>Aucune classe n'a été trouvée dans la liste lors de l'initialisation.</p>");
+        }
 
         for (Class<?> c : classAnnote) {
-            out.println("<p>" + c.getName() + "</p>");
+            out.println("<p>Trouvée : " + c.getName() + "</p>");
         }
     }
 
