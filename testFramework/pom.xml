@@ -7,19 +7,24 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>mg.framework</groupId>
-    <artifactId>spring0</artifactId>
+    <groupId>mg.test</groupId>
+    <artifactId>testFramework</artifactId>
     <version>1.0</version>
 
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>mg.framework</groupId>
+            <artifactId>spring0</artifactId>
+            <version>1.0</version>
+        </dependency>
 
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -37,7 +42,15 @@
     </dependencies>
 
     <build>
-        <finalName>framework</finalName>
+        <finalName>testFramework</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+            </plugin>
+        </plugins>
     </build>
 
 </project>

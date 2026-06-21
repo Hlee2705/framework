@@ -1,2 +1,3 @@
 com/framework/App.class
+com/framework/annotation/JsonSerializable.class
 com/framework/servlet/FrontControllerServlet.class
