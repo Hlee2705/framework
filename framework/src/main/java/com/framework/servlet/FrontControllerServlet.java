@@ -37,7 +37,7 @@ public class FrontControllerServlet extends HttpServlet {
             }
 
             System.out.println("Total annotées = " + classAnnote.size());
-
+0
         } catch (Exception e) {
             throw new ServletException(e);
         }
