@@ -18,7 +18,7 @@ import com.framework.model.Mapping;
 
 public class FrontControllerServlet extends HttpServlet {
 
-    // 🗺️ Notre table de routage URL -> Mapping(Classe, Méthode)
+    //  Notre table de routage URL -> Mapping(Classe, Méthode)
     private Map<String, Mapping> urlMappingMap = new HashMap<>();
     private List<Class<?>> classAnnote = new ArrayList<>();
 
@@ -39,7 +39,7 @@ public class FrontControllerServlet extends HttpServlet {
                     classAnnote.add(clazz);
                     System.out.println("Contrôleur détecté : " + clazz.getName());
                     
-                    // 🔍 Pour chaque contrôleur, on cherche ses méthodes annotées @UrlMapping
+                    //  Pour chaque contrôleur, on cherche ses méthodes annotées @UrlMapping
                     Method[] methodes = clazz.getDeclaredMethods();
                     for (Method methode : methodes) {
                         if (methode.isAnnotationPresent(UrlMapping.class)) {
