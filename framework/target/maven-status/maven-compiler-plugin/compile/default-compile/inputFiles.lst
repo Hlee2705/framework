@@ -1,3 +1,5 @@
 /home/valisoa/Documents/Web_Dyn/framework/framework/src/main/java/com/framework/App.java
+/home/valisoa/Documents/Web_Dyn/framework/framework/src/main/java/com/framework/model/Mapping.java
 /home/valisoa/Documents/Web_Dyn/framework/framework/src/main/java/com/framework/annotation/JsonSerializable.java
+/home/valisoa/Documents/Web_Dyn/framework/framework/src/main/java/com/framework/annotation/UrlMapping.java
 /home/valisoa/Documents/Web_Dyn/framework/framework/src/main/java/com/framework/servlet/FrontControllerServlet.java

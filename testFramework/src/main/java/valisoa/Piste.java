@@ -6,3 +6,4 @@ import com.framework.annotation.JsonSerializable;
 public class Piste {
     
 }
+
