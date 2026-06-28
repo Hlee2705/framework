@@ -17,7 +17,8 @@ public class DeptController {
     }
 
     // Une méthode normale, non annotée, pour vérifier qu'elle est bien ignorée
-    public void uneMethodeQuelconque() {
+    @UrlMapping("andrana")
+    public void andrana() {
         System.out.println("Je ne devrais pas être listée par le framework.");
     }
 }
