@@ -38,8 +38,7 @@ public class FrontControllerServlet extends HttpServlet {
                 throw new ServletException("Impossible de trouver WEB-INF/classes");
             }
 
-            List<Class<?>> toutesLesClasses =
-                    scanClasses(new java.io.File(rootPath), "");
+            List<Class<?>> toutesLesClasses = scanClasses(new java.io.File(rootPath), "");
 
             // Recherche des contrôleurs
             for (Class<?> clazz : toutesLesClasses) {
@@ -56,14 +55,12 @@ public class FrontControllerServlet extends HttpServlet {
 
                         if (methode.isAnnotationPresent(UrlMapping.class)) {
 
-                            UrlMapping annotation =
-                                    methode.getAnnotation(UrlMapping.class);
+                            UrlMapping annotation = methode.getAnnotation(UrlMapping.class);
 
                             String url = annotation.value();
                             String httpMethod = annotation.method().toUpperCase();
 
-                            UrlMethod key =
-                                    new UrlMethod(url, httpMethod);
+                            UrlMethod key = new UrlMethod(url, httpMethod);
 
                             // Vérification des doublons
                             if (urlMappingMap.containsKey(key)) {
@@ -116,7 +113,7 @@ public class FrontControllerServlet extends HttpServlet {
     // ============================================================
 
     private List<Class<?>> scanClasses(java.io.File dir,
-                                       String packageName)
+            String packageName)
             throws ClassNotFoundException {
 
         List<Class<?>> classes = new ArrayList<>();
@@ -131,10 +128,9 @@ public class FrontControllerServlet extends HttpServlet {
 
             if (file.isDirectory()) {
 
-                String newPackage =
-                        packageName.isEmpty()
-                                ? file.getName()
-                                : packageName + "." + file.getName();
+                String newPackage = packageName.isEmpty()
+                        ? file.getName()
+                        : packageName + "." + file.getName();
 
                 classes.addAll(scanClasses(file, newPackage));
 
@@ -142,19 +138,16 @@ public class FrontControllerServlet extends HttpServlet {
 
             else if (file.getName().endsWith(".class")) {
 
-                String className =
-                        packageName.isEmpty()
-                                ? file.getName().replace(".class", "")
-                                : packageName + "."
-                                        + file.getName().replace(".class", "");
+                String className = packageName.isEmpty()
+                        ? file.getName().replace(".class", "")
+                        : packageName + "."
+                                + file.getName().replace(".class", "");
 
                 try {
 
-                    ClassLoader loader =
-                            Thread.currentThread().getContextClassLoader();
+                    ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
-                    Class<?> clazz =
-                            Class.forName(className, true, loader);
+                    Class<?> clazz = Class.forName(className, true, loader);
 
                     classes.add(clazz);
 
@@ -179,7 +172,7 @@ public class FrontControllerServlet extends HttpServlet {
     // ============================================================
 
     protected void processRequest(HttpServletRequest request,
-                                  HttpServletResponse response)
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         response.setContentType("text/html");
@@ -189,18 +182,15 @@ public class FrontControllerServlet extends HttpServlet {
         String contextPath = request.getContextPath();
         String requestURI = request.getRequestURI();
 
-        String pathInfo =
-                requestURI.substring(contextPath.length());
+        String pathInfo = requestURI.substring(contextPath.length());
 
         if (pathInfo.startsWith("/")) {
             pathInfo = pathInfo.substring(1);
         }
 
-        String httpMethod =
-                request.getMethod().toUpperCase();
+        String httpMethod = request.getMethod().toUpperCase();
 
-        UrlMethod key =
-                new UrlMethod(pathInfo, httpMethod);
+        UrlMethod key = new UrlMethod(pathInfo, httpMethod);
 
         out.println("<h1>Mini Spring</h1>");
 
@@ -210,8 +200,7 @@ public class FrontControllerServlet extends HttpServlet {
 
         if (urlMappingMap.containsKey(key)) {
 
-            Mapping mapping =
-                    urlMappingMap.get(key);
+            Mapping mapping = urlMappingMap.get(key);
 
             out.println("<h2 style='color:green'>Route trouvée</h2>");
 
@@ -224,6 +213,22 @@ public class FrontControllerServlet extends HttpServlet {
             out.println(mapping.getMethod().getName());
 
             out.println("</p>");
+
+            System.out.println("========== EXECUTION ==========");
+            System.out.println("Contrôleur : " + mapping.getControllerClass().getName());
+            System.out.println("Méthode : " + mapping.getMethod().getName());
+
+            try {
+                Object controller = mapping.getControllerClass().getDeclaredConstructors().newInstance();
+
+                mapping.getMethod().invoke(controller);
+
+                System.out.println("Méthode exécutée avec succès.");
+
+            } catch (Exception e) {
+                // TODO: handle exception
+                throw new ServletException(e);
+            }
 
         }
 
@@ -273,7 +278,7 @@ public class FrontControllerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         processRequest(request, response);
@@ -282,7 +287,7 @@ public class FrontControllerServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         processRequest(request, response);
