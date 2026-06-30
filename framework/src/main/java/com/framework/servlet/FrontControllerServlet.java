@@ -219,7 +219,7 @@ public class FrontControllerServlet extends HttpServlet {
             System.out.println("Méthode : " + mapping.getMethod().getName());
 
             try {
-                Object controller = mapping.getControllerClass().getDeclaredConstructors().newInstance();
+                Object controller = mapping.getControllerClass().getDeclaredConstructor().newInstance();
 
                 mapping.getMethod().invoke(controller);
 
