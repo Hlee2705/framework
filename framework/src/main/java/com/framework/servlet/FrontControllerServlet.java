@@ -15,132 +15,278 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import com.framework.annotation.UrlMapping;
 import com.framework.model.Mapping;
+import com.framework.model.UrlMethod;
 
 public class FrontControllerServlet extends HttpServlet {
 
-    //  Notre table de routage URL -> Mapping(Classe, Méthode)
-    private Map<String, Mapping> urlMappingMap = new HashMap<>();
+    // Table de routage : (URL + méthode HTTP) -> Mapping
+    private Map<UrlMethod, Mapping> urlMappingMap = new HashMap<>();
+
+    // Liste des contrôleurs détectés
     private List<Class<?>> classAnnote = new ArrayList<>();
 
     @Override
     public void init() throws ServletException {
-        System.out.println("=== INIT FRAMEWORK : SCAN DES ROUTES ===");
+
+        System.out.println("========== INITIALISATION DU FRAMEWORK ==========");
 
         try {
+
             String rootPath = getServletContext().getRealPath("/WEB-INF/classes");
-            if (rootPath == null)
-                throw new ServletException("Chemin WEB-INF/classes introuvable");
 
-            List<Class<?>> toutesLesClasses = scanClasses(new java.io.File(rootPath), "");
-
-            // Parcourir toutes les classes pour trouver les @Controller
-            for (Class<?> clazz : toutesLesClasses) {
-                if (clazz.isAnnotationPresent(org.springframework.stereotype.Controller.class)) {
-                    classAnnote.add(clazz);
-                    System.out.println("Contrôleur détecté : " + clazz.getName());
-                    
-                    //  Pour chaque contrôleur, on cherche ses méthodes annotées @UrlMapping
-                    Method[] methodes = clazz.getDeclaredMethods();
-                    for (Method methode : methodes) {
-                        if (methode.isAnnotationPresent(UrlMapping.class)) {
-                            UrlMapping annotation = methode.getAnnotation(UrlMapping.class);
-                            String url = annotation.value(); // Récupère par ex "dept/new"
-                            
-                            // Enregistrement dans la Map
-                            urlMappingMap.put(url, new Mapping(clazz, methode));
-                            System.out.println("  -> Route enregistrée : " + url + " -> " + clazz.getSimpleName() + "." + methode.getName() + "()");
-                        }
-                    }
-                }
+            if (rootPath == null) {
+                throw new ServletException("Impossible de trouver WEB-INF/classes");
             }
 
-            System.out.println("Total contrôleurs = " + classAnnote.size());
-            System.out.println("Total routes enregistrées = " + urlMappingMap.size());
+            List<Class<?>> toutesLesClasses =
+                    scanClasses(new java.io.File(rootPath), "");
+
+            // Recherche des contrôleurs
+            for (Class<?> clazz : toutesLesClasses) {
+
+                if (clazz.isAnnotationPresent(org.springframework.stereotype.Controller.class)) {
+
+                    classAnnote.add(clazz);
+
+                    System.out.println("Contrôleur : " + clazz.getName());
+
+                    Method[] methodes = clazz.getDeclaredMethods();
+
+                    for (Method methode : methodes) {
+
+                        if (methode.isAnnotationPresent(UrlMapping.class)) {
+
+                            UrlMapping annotation =
+                                    methode.getAnnotation(UrlMapping.class);
+
+                            String url = annotation.value();
+                            String httpMethod = annotation.method().toUpperCase();
+
+                            UrlMethod key =
+                                    new UrlMethod(url, httpMethod);
+
+                            // Vérification des doublons
+                            if (urlMappingMap.containsKey(key)) {
+
+                                throw new ServletException(
+                                        "Route déjà déclarée : "
+                                                + httpMethod
+                                                + " "
+                                                + url);
+                            }
+
+                            urlMappingMap.put(
+                                    key,
+                                    new Mapping(clazz, methode));
+
+                            System.out.println(
+                                    "Route enregistrée : "
+                                            + httpMethod
+                                            + " "
+                                            + url
+                                            + " -> "
+                                            + clazz.getSimpleName()
+                                            + "."
+                                            + methode.getName()
+                                            + "()");
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            System.out.println("-------------------------------------");
+            System.out.println("Nombre de contrôleurs : " + classAnnote.size());
+            System.out.println("Nombre de routes : " + urlMappingMap.size());
+            System.out.println("-------------------------------------");
 
         } catch (Exception e) {
+
             throw new ServletException(e);
+
         }
+
     }
 
-    // ===== SCANNER LES CLASSES =====
-    private List<Class<?>> scanClasses(java.io.File dir, String packageName)
+    // ============================================================
+    // Scanner récursivement toutes les classes du projet
+    // ============================================================
+
+    private List<Class<?>> scanClasses(java.io.File dir,
+                                       String packageName)
             throws ClassNotFoundException {
 
         List<Class<?>> classes = new ArrayList<>();
+
         java.io.File[] files = dir.listFiles();
-        if (files == null)
+
+        if (files == null) {
             return classes;
+        }
 
         for (java.io.File file : files) {
+
             if (file.isDirectory()) {
-                String newPackage = packageName.isEmpty()
-                        ? file.getName()
-                        : packageName + "." + file.getName();
+
+                String newPackage =
+                        packageName.isEmpty()
+                                ? file.getName()
+                                : packageName + "." + file.getName();
+
                 classes.addAll(scanClasses(file, newPackage));
 
-            } else if (file.getName().endsWith(".class")) {
-                String className = packageName.isEmpty()
-                        ? file.getName().replace(".class", "")
-                        : packageName + "." + file.getName().replace(".class", "");
-                try {
-                    ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-                    classes.add(Class.forName(className, true, contextClassLoader));
-                } catch (ClassNotFoundException | NoClassDefFoundError e) {
-                    System.out.println("Ignorée : " + className);
-                }
             }
+
+            else if (file.getName().endsWith(".class")) {
+
+                String className =
+                        packageName.isEmpty()
+                                ? file.getName().replace(".class", "")
+                                : packageName + "."
+                                        + file.getName().replace(".class", "");
+
+                try {
+
+                    ClassLoader loader =
+                            Thread.currentThread().getContextClassLoader();
+
+                    Class<?> clazz =
+                            Class.forName(className, true, loader);
+
+                    classes.add(clazz);
+
+                }
+
+                catch (ClassNotFoundException | NoClassDefFoundError e) {
+
+                    System.out.println("Classe ignorée : " + className);
+
+                }
+
+            }
+
         }
+
         return classes;
+
     }
 
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    // ============================================================
+    // Traitement des requêtes
+    // ============================================================
+
+    protected void processRequest(HttpServletRequest request,
+                                  HttpServletResponse response)
             throws ServletException, IOException {
 
         response.setContentType("text/html");
+
         PrintWriter out = response.getWriter();
 
-        //  Extraction propre de l'URL relative entrée
         String contextPath = request.getContextPath();
         String requestURI = request.getRequestURI();
-        String pathInfo = requestURI.substring(contextPath.length());
-        
-        // Retirer le premier '/' si présent pour matcher avec "dept/new"
+
+        String pathInfo =
+                requestURI.substring(contextPath.length());
+
         if (pathInfo.startsWith("/")) {
             pathInfo = pathInfo.substring(1);
         }
 
-        out.println("<h1>Mini Spring - Routeur</h1>");
-        out.println("<p>URL demandée : <strong>" + pathInfo + "</strong></p>");
+        String httpMethod =
+                request.getMethod().toUpperCase();
 
-        //  Vérification si l'URL est supportée
-        if (urlMappingMap.containsKey(pathInfo)) {
-            Mapping mapping = urlMappingMap.get(pathInfo);
-            out.println("<h3 style='color:green;'> URL Supportée !</h3>");
-            out.println("<p><strong>" + mapping.getControllerClass().getSimpleName() + "</strong> -> " + mapping.getMethod().getName() + "()</p>");
-        } else {
-            //  L'URL n'existe pas : Affichage de toutes les méthodes supportées avant l'exception
-            out.println("<h3 style='color:red;'> URL non supportée</h3>");
-            out.println("<h4>Voici les méthodes annotées par @UrlMapping disponibles :</h4>");
-            
-            for (Map.Entry<String, Mapping> entry : urlMappingMap.entrySet()) {
-                Mapping m = entry.getValue();
-                out.println("<p>" + m.getControllerClass().getSimpleName() + " -> " + m.getMethod().getName() + "() [Route : /" + entry.getKey() + "]</p>");
+        UrlMethod key =
+                new UrlMethod(pathInfo, httpMethod);
+
+        out.println("<h1>Mini Spring</h1>");
+
+        out.println("<p>URL : " + pathInfo + "</p>");
+
+        out.println("<p>Méthode HTTP : " + httpMethod + "</p>");
+
+        if (urlMappingMap.containsKey(key)) {
+
+            Mapping mapping =
+                    urlMappingMap.get(key);
+
+            out.println("<h2 style='color:green'>Route trouvée</h2>");
+
+            out.println("<p>");
+
+            out.println(mapping.getControllerClass().getName());
+
+            out.println("<br>");
+
+            out.println(mapping.getMethod().getName());
+
+            out.println("</p>");
+
+        }
+
+        else {
+
+            out.println("<h2 style='color:red'>Route inconnue</h2>");
+
+            out.println("<h3>Routes disponibles :</h3>");
+
+            for (Map.Entry<UrlMethod, Mapping> entry : urlMappingMap.entrySet()) {
+
+                UrlMethod route = entry.getKey();
+                Mapping mapping = entry.getValue();
+
+                out.println("<p>");
+
+                out.println(route.getMethod());
+
+                out.println(" /");
+
+                out.println(route.getUrl());
+
+                out.println(" -> ");
+
+                out.println(mapping.getControllerClass().getSimpleName());
+
+                out.println(".");
+
+                out.println(mapping.getMethod().getName());
+
+                out.println("()");
+
+                out.println("</p>");
+
             }
 
-            // Lever l'exception demandée par ton TP
-            throw new ServletException("L'url " + pathInfo + " n'est pas supportée");
+            throw new ServletException(
+                    "L'URL "
+                            + pathInfo
+                            + " ("
+                            + httpMethod
+                            + ") n'est pas supportée.");
+
         }
+
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
             throws ServletException, IOException {
+
         processRequest(request, response);
+
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response)
             throws ServletException, IOException {
+
         processRequest(request, response);
+
     }
+
 }
