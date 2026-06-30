@@ -3,14 +3,15 @@ package com.framework.model;
 import java.util.Objects;
 
 public class UrlMethod {
+
     private String url;
     private String method;
 
     public UrlMethod() {
     }
 
-    public UrlMethod(String url, String method){
-        this.url = url:
+    public UrlMethod(String url, String method) {
+        this.url = url;
         this.method = method;
     }
 
@@ -30,21 +31,22 @@ public class UrlMethod {
         this.method = method;
     }
 
-    // Surcharger equals() : deux UrlMethod sont égaux si leur URL et leur mméthode
-    // HTTP sont identiques
-    public boolean equals(Object obj){
-        if(this == obj)
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj)
             return true;
 
-        if(obj == null)
+        if (obj == null)
             return false;
 
-        if(getClass() != obj.getClass())
+        if (getClass() != obj.getClass())
             return false;
 
         UrlMethod other = (UrlMethod) obj;
 
-        return Objects.equals(url, other.url) && Objects.equals(method, other.method)
+        return Objects.equals(url, other.url)
+                && Objects.equals(method, other.method);
     }
 
     @Override
