@@ -26,4 +26,9 @@ public class DeptController {
     public void andrana() {
         System.out.println("andrana fotsiny");
     }
+
+    @UrlMapping(value = "fraise", method = "GET")
+    public void fraise() {
+        System.out.println("j'adore les fraises");
+    }
 }

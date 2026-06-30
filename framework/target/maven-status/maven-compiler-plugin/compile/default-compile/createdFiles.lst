@@ -1,3 +1,6 @@
 com/framework/App.class
+com/framework/servlet/FrontControllerServlet.class
+com/framework/annotation/UrlMapping.class
 com/framework/model/UrlMethod.class
+com/framework/annotation/JsonSerializable.class
 com/framework/model/Mapping.class
