@@ -1,5 +1,6 @@
 package com.framework.model;
 
+import java.io.InvalidObjectException;
 import java.lang.reflect.Method;
 
 // permet de lier une classe et une méthode spécifique pour une url donnée
