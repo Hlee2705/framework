@@ -22,7 +22,7 @@ public class DeptController {
         System.out.println("Méthode list() exécutée !");
     }
 
-    @UrlMapping(value = "andrana", method = "GET")
+    @UrlMapping(value = "andrana")
     public void andrana() {
         System.out.println("andrana fotsiny");
     }
