@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # ==========================================
 # Configuration
 # ==========================================
@@ -16,43 +18,44 @@ echo " Déploiement du mini framework"
 echo "=========================================="
 
 # ==========================================
-# Compilation du framework
+# 1. Compilation du framework
 # ==========================================
 
 echo
 echo "[1/5] Compilation du framework..."
 
-cd "$FRAMEWORK_DIR" || exit
+cd "$FRAMEWORK_DIR"
 
 mvn clean install
 
-if [ $? -ne 0 ]; then
-    echo "Erreur lors de la compilation du framework."
-    exit 1
-fi
-
 # ==========================================
-# Compilation du projet de test
+# 2. Compilation du projet de test
 # ==========================================
 
 echo
 echo "[2/5] Compilation du projet de test..."
 
-cd "$TEST_DIR" || exit
+cd "$TEST_DIR"
 
 mvn clean package
 
-if [ $? -ne 0 ]; then
-    echo "Erreur lors de la compilation du projet de test."
-    exit 1
-fi
-
 # ==========================================
-# Déploiement
+# 3. Arrêt de Tomcat
 # ==========================================
 
 echo
-echo "[3/5] Déploiement..."
+echo "[3/5] Arrêt de Tomcat..."
+
+"$CATALINA_HOME/bin/shutdown.sh" || true
+
+sleep 3
+
+# ==========================================
+# 4. Déploiement
+# ==========================================
+
+echo
+echo "[4/5] Déploiement..."
 
 rm -rf "$CATALINA_HOME/webapps/testFramework"
 rm -f "$CATALINA_HOME/webapps/$WAR_NAME"
@@ -60,25 +63,18 @@ rm -f "$CATALINA_HOME/webapps/$WAR_NAME"
 cp "target/$WAR_NAME" "$CATALINA_HOME/webapps/"
 
 # ==========================================
-# Redémarrage de Tomcat
+# 5. Démarrage de Tomcat
 # ==========================================
 
 echo
-echo "[4/5] Redémarrage de Tomcat..."
-
-"$CATALINA_HOME/bin/shutdown.sh"
-
-sleep 2
+echo "[5/5] Démarrage de Tomcat..."
 
 "$CATALINA_HOME/bin/startup.sh"
 
-# ==========================================
-# Fin
-# ==========================================
-
 echo
-echo "[5/5] Déploiement terminé."
-
+echo "=========================================="
+echo "Déploiement terminé !"
+echo "=========================================="
 echo
 echo "Application :"
 echo "http://localhost:8080/testFramework/"
