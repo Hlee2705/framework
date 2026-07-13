@@ -1,5 +1,6 @@
 com/framework/App.class
 com/framework/servlet/FrontControllerServlet.class
+com/framework/model/ModelView.class
 com/framework/listener/RequestContextListener.class
 com/framework/util/ParamScanUtil.class
 com/framework/annotation/UrlMapping.class

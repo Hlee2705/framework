@@ -4,5 +4,6 @@
 /home/valisoa/Documents/Web_Dyn/framework/framework/src/main/java/com/framework/listener/RequestContextListener.java
 /home/valisoa/Documents/Web_Dyn/framework/framework/src/main/java/com/framework/model/Mapping.java
 /home/valisoa/Documents/Web_Dyn/framework/framework/src/main/java/com/framework/annotation/JsonSerializable.java
+/home/valisoa/Documents/Web_Dyn/framework/framework/src/main/java/com/framework/model/ModelView.java
 /home/valisoa/Documents/Web_Dyn/framework/framework/src/main/java/com/framework/annotation/UrlMapping.java
 /home/valisoa/Documents/Web_Dyn/framework/framework/src/main/java/com/framework/servlet/FrontControllerServlet.java
