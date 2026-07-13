@@ -1,11 +1,11 @@
 package com.framework.servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.Map;
 
 import com.framework.model.Mapping;
+import com.framework.model.ModelView;
 import com.framework.model.UrlMethod;
 
 import jakarta.servlet.ServletException;
@@ -17,48 +17,48 @@ public class FrontControllerServlet extends HttpServlet {
 
     private Map<UrlMethod, Mapping> mappings;
 
+    // Préfixe et suffixe des vues
+    private static final String PREFIX = "/WEB-INF/views/";
+    private static final String SUFFIX = ".jsp";
+
     @Override
     public void init() throws ServletException {
 
-        mappings =
-                (Map<UrlMethod, Mapping>)
-                        getServletContext()
-                                .getAttribute("globalMappings");
+        mappings = (Map<UrlMethod, Mapping>)
+                getServletContext().getAttribute("globalMappings");
 
         if (mappings == null) {
             throw new ServletException(
                     "Le Listener n'a pas chargé les mappings.");
         }
 
-        System.out.println("FrontController initialisé.");
+        System.out.println("================================");
+        System.out.println("FrontController initialisé");
+        System.out.println("Nombre de routes : " + mappings.size());
+        System.out.println("================================");
     }
 
     @Override
-    protected void doGet(HttpServletRequest req,
-                         HttpServletResponse resp)
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
             throws ServletException, IOException {
 
-        processRequest(req, resp);
+        processRequest(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req,
-                          HttpServletResponse resp)
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response)
             throws ServletException, IOException {
 
-        processRequest(req, resp);
+        processRequest(request, response);
     }
 
     private void processRequest(HttpServletRequest request,
                                 HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("text/html");
-
-        PrintWriter out = response.getWriter();
-
         String uri = request.getRequestURI();
-
         String context = request.getContextPath();
 
         String url = uri.substring(context.length());
@@ -67,76 +67,71 @@ public class FrontControllerServlet extends HttpServlet {
             url = url.substring(1);
         }
 
-        String httpMethod =
-                request.getMethod().toUpperCase();
+        String httpMethod = request.getMethod().toUpperCase();
 
-        UrlMethod key =
-                new UrlMethod(url, httpMethod);
-
-        out.println("<h1>Mini Spring</h1>");
-        out.println("<p>URL : " + url + "</p>");
-        out.println("<p>Méthode HTTP : " + httpMethod + "</p>");
+        UrlMethod key = new UrlMethod(url, httpMethod);
 
         Mapping mapping = mappings.get(key);
 
         if (mapping == null) {
-
-            out.println("<h2 style='color:red'>Route inconnue</h2>");
-
-            out.println("<h3>Routes disponibles :</h3>");
-
-            for (Map.Entry<UrlMethod, Mapping> entry :
-                    mappings.entrySet()) {
-
-                out.println("<p>");
-
-                out.println(entry.getKey());
-
-                out.println(" -> ");
-
-                out.println(entry.getValue()
-                        .getControllerClass()
-                        .getSimpleName());
-
-                out.println(".");
-
-                out.println(entry.getValue()
-                        .getMethod()
-                        .getName());
-
-                out.println("()");
-
-                out.println("</p>");
-            }
-
-            return;
+            throw new ServletException(
+                    "Aucun mapping trouvé pour "
+                            + httpMethod
+                            + " "
+                            + url);
         }
 
         try {
 
-            Object controller =
-                    mapping.getControllerClass()
-                            .getDeclaredConstructor()
-                            .newInstance();
+            // Création du contrôleur
+            Object controller = mapping.getControllerClass()
+                    .getDeclaredConstructor()
+                    .newInstance();
 
+            // Méthode à appeler
             Method method = mapping.getMethod();
 
-            Object result =
-                    method.invoke(controller);
+            // Exécution
+            Object result = method.invoke(controller);
 
-            out.println("<h2 style='color:green'>Route trouvée</h2>");
+            // ----------- Cas 1 : la méthode retourne un ModelView ----------
+            if (result instanceof ModelView) {
 
-            out.println("<p>");
+                ModelView mv = (ModelView) result;
 
-            out.println(mapping.getControllerClass().getName());
+                // Envoi des données à la requête
+                for (Map.Entry<String, Object> entry : mv.getData().entrySet()) {
+                    request.setAttribute(
+                            entry.getKey(),
+                            entry.getValue());
+                }
 
-            out.println("<br>");
+                // Construction du chemin de la vue
+                String view =
+                        PREFIX
+                                + mv.getView()
+                                + SUFFIX;
 
-            out.println(method.getName());
+                // Redirection vers la JSP
+                request.getRequestDispatcher(view)
+                        .forward(request, response);
 
-            out.println("</p>");
+                return;
+            }
 
-            out.println("<p>Résultat : " + result + "</p>");
+            // ----------- Cas 2 : autre type de retour ----------
+            response.setContentType("text/html;charset=UTF-8");
+
+            response.getWriter().println("<h2>Méthode exécutée</h2>");
+            response.getWriter().println("<p>Contrôleur : "
+                    + mapping.getControllerClass().getSimpleName()
+                    + "</p>");
+            response.getWriter().println("<p>Méthode : "
+                    + method.getName()
+                    + "</p>");
+            response.getWriter().println("<p>Résultat : "
+                    + result
+                    + "</p>");
 
         } catch (Exception e) {
             throw new ServletException(e);
