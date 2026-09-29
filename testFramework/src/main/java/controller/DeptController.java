@@ -2,6 +2,7 @@ package controller;
 
 import org.springframework.stereotype.Controller;
 
+import com.framework.annotation.ApiRest;
 import com.framework.annotation.UrlMapping;
 import com.framework.model.ModelView;
 
@@ -58,5 +59,11 @@ public class DeptController {
         mv.addObject("fruit", "J'adore les pommes");
 
         return mv;
+    }
+
+    @UrlMapping(value = "API/test", method = "GET")
+    @ApiRest 
+    public String testerApi(){
+        return "{\"message\":\"Bonjour depuis mon API\"}";
     }
 }
