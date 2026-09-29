@@ -61,9 +61,17 @@ public class DeptController {
         return mv;
     }
 
-    @UrlMapping(value = "API/test", method = "GET")
+    @UrlMapping(value = "api/test", method = "GET")
     @ApiRest 
     public String testerApi(){
         return "{\"message\":\"Bonjour depuis mon API\"}";
+    }
+
+    @UrlMapping(value = "api/employe", method = "GET")
+    @ApiRest 
+    public Employe testEmploye(){
+        Employe employe = new Employe(1, "Rakoto");
+
+        return employe;
     }
 }
