@@ -1,3 +1,4 @@
+com/framework/annotation/ApiRest.class
 com/framework/App.class
 com/framework/servlet/FrontControllerServlet.class
 com/framework/model/ModelView.class
@@ -5,5 +6,5 @@ com/framework/listener/RequestContextListener.class
 com/framework/util/ParamScanUtil.class
 com/framework/annotation/UrlMapping.class
 com/framework/model/UrlMethod.class
-com/framework/annotation/JsonSerializable.class
 com/framework/model/Mapping.class
+com/framework/annotation/JsonSerializable.class

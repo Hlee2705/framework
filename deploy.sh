@@ -6,8 +6,8 @@ set -e
 # Configuration
 # ==========================================
 
-FRAMEWORK_DIR="$HOME/Documents/Web_Dyn/framework/framework"
-TEST_DIR="$HOME/Documents/Web_Dyn/framework/testFramework"
+FRAMEWORK_DIR="$HOME/Documents/framework/framework"
+TEST_DIR="$HOME/Documents/framework/testFramework"
 
 CATALINA_HOME="$HOME/TOMCAT"
 

@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import com.framework.annotation.ApiRest;
 import com.framework.model.Mapping;
 import com.framework.model.ModelView;
 import com.framework.model.UrlMethod;
+import com.google.gson.Gson;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -17,6 +19,9 @@ public class FrontControllerServlet extends HttpServlet {
 
     private Map<UrlMethod, Mapping> mappings;
 
+    // creer un objte gson
+    private Gson gson = new Gson();
+
     // Préfixe et suffixe des vues
     private static final String PREFIX = "/WEB-INF/views/";
     private static final String SUFFIX = ".jsp";
@@ -24,8 +29,7 @@ public class FrontControllerServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
 
-        mappings = (Map<UrlMethod, Mapping>)
-                getServletContext().getAttribute("globalMappings");
+        mappings = (Map<UrlMethod, Mapping>) getServletContext().getAttribute("globalMappings");
 
         if (mappings == null) {
             throw new ServletException(
@@ -40,7 +44,7 @@ public class FrontControllerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         processRequest(request, response);
@@ -48,14 +52,14 @@ public class FrontControllerServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         processRequest(request, response);
     }
 
     private void processRequest(HttpServletRequest request,
-                                HttpServletResponse response)
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         String uri = request.getRequestURI();
@@ -94,7 +98,28 @@ public class FrontControllerServlet extends HttpServlet {
             // Exécution
             Object result = method.invoke(controller);
 
-            // ----------- Cas 1 : la méthode retourne un ModelView ----------
+            // cas 1 : api rest
+            if (method.isAnnotationPresent(ApiRest.class)) {
+
+                response.setContentType("application/json;charset=UTF-8");
+
+                if (result instanceof String) {
+
+                    // Le développeur retourne déjà du JSON
+                    response.getWriter().print(result);
+
+                } else {
+
+                    // le framework transforme l'objet Java en json
+                    String json = gson.toJson(result);
+
+                    response.getWriter().print(json);
+                }
+
+                return;
+            }
+
+            // ----------- Cas 2 : la méthode retourne un ModelView ----------
             if (result instanceof ModelView) {
 
                 ModelView mv = (ModelView) result;
@@ -107,10 +132,9 @@ public class FrontControllerServlet extends HttpServlet {
                 }
 
                 // Construction du chemin de la vue
-                String view =
-                        PREFIX
-                                + mv.getView()
-                                + SUFFIX;
+                String view = PREFIX
+                        + mv.getView()
+                        + SUFFIX;
 
                 // Redirection vers la JSP
                 request.getRequestDispatcher(view)

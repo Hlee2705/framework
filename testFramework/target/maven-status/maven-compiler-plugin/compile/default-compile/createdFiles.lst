@@ -1,6 +1,9 @@
 controller/DeptController.class
 valisoa/Piste.class
+controller/Voiture.class
+controller/Etudiant.class
 controller/C.class
-controller/B.class
 controller/A.class
 valisoa/Avion.class
+controller/Employe.class
+controller/B.class
