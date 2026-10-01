@@ -74,4 +74,20 @@ public class DeptController {
 
         return employe;
     }
+
+    @UrlMapping(value = "api/etudiant", method = "GET")
+    @ApiRest 
+    public Etudiant testEtudiant(){
+        Etudiant etudiant = new Etudiant(1, "ETU003949");
+
+        return etudiant;
+    }
+
+    @UrlMapping(value = "api/voiture", method = "GET")
+    @ApiRest 
+    public Voiture testVoiture(){
+        Voiture v = new Voiture(1, "bmw","dddjdj");
+
+        return v;
+    }
 }
