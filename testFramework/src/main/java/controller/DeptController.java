@@ -61,12 +61,12 @@ public class DeptController {
     }
 
     @UrlMapping(value = "dept/test-param", method = "GET")
-    public String TestParam(String nom, String prenom) {
+    public String testParam(String nom, String prenom) {
         return "Test parametres";
     }
 
     @UrlMapping(value = "dept/test-age", method = "GET")
-    public String TestParam(int age) {
+    public String testAge(int age) {
         return "Age reçu:  " + age;
     }
 
@@ -87,5 +87,10 @@ public class DeptController {
     @UrlMapping(value = "dept/test-double", method = "GET")
     public String testDouble(double salaire) {
         return "Salaire reçu : " + salaire;
+    }
+
+    @UrlMapping(value = "dept/test-boolean", method = "GET")
+    public String testBoolean(boolean actif) {
+        return "Actif : " + actif;
     }
 }

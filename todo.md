@@ -16,3 +16,15 @@ dans FrontControllerServlet
 ## Modifier la construction de arguments: convertir automatiquement selon le type
 
 ### test dans DeptController: testAge(int age)
+
+## Verifier si le parametre existe : modifier la boucle 
+
+## Gestion correcte des types primitifs lorsqu'un paramètre est absent.
+### Ajouter une verification
+
+## Gestion des erreurs de conversion : valeur reçue mais impossible à convertir 
+try and catch
+
+## traiter correctement les parametres boolean 
+
+
