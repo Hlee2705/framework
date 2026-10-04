@@ -59,4 +59,9 @@ public class DeptController {
 
         return mv;
     }
+
+    @UrlMapping(value = "dept/test-param", method = "GET")
+    public String TestParam(String nom, String prenom){
+        return "Test parametres";
+    }
 }

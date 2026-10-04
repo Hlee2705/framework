@@ -91,6 +91,14 @@ public class FrontControllerServlet extends HttpServlet {
             // Méthode à appeler
             Method method = mapping.getMethod();
 
+            // afficher les parametres detectes : recuperation des parametres
+            java.lang.reflect Parameter[] parameters = method.getParameters();
+
+            for(java.lang.reflect.Parameter parameter: parameters){
+                System.out.println("Parametre : " + parameter.getName());
+                System.out.println("Type : " + parameter.getType().getSimpleName());
+            }
+
             // Exécution
             Object result = method.invoke(controller);
 
