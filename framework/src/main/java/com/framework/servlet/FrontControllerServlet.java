@@ -24,8 +24,7 @@ public class FrontControllerServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
 
-        mappings = (Map<UrlMethod, Mapping>)
-                getServletContext().getAttribute("globalMappings");
+        mappings = (Map<UrlMethod, Mapping>) getServletContext().getAttribute("globalMappings");
 
         if (mappings == null) {
             throw new ServletException(
@@ -40,7 +39,7 @@ public class FrontControllerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         processRequest(request, response);
@@ -48,14 +47,14 @@ public class FrontControllerServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         processRequest(request, response);
     }
 
     private void processRequest(HttpServletRequest request,
-                                HttpServletResponse response)
+            HttpServletResponse response)
             throws ServletException, IOException {
 
         String uri = request.getRequestURI();
@@ -92,15 +91,76 @@ public class FrontControllerServlet extends HttpServlet {
             Method method = mapping.getMethod();
 
             // afficher les parametres detectes : recuperation des parametres
-            java.lang.reflect Parameter[] parameters = method.getParameters();
+            java.lang.reflect.Parameter[] parameters = method.getParameters();
 
-            for(java.lang.reflect.Parameter parameter: parameters){
+            Object[] arguments = new Object[parameters.length];
+
+            for (int i = 0; i < parameters.length; i++) {
+                java.lang.reflect.Parameter parameter = parameters[i];
+
+                String nomParametre = parameter.getName();
+
+                String valeur = request.getParameter(nomParametre);
+
+                Class<?> type = parameter.getType();
+
+                Object valeurConvertie = valeur;
+
+                // String
+                if (type == String.class) {
+                    valeurConvertie = valeur;
+                }
+
+                // int / Integer
+                else if (type == int.class || type == Integer.class) {
+                    valeurConvertie = Integer.parseInt(valeur);
+                }
+
+                // long / Long
+                else if (type == long.class || type == Long.class) {
+                    valeurConvertie = Long.parseLong(valeur);
+                }
+
+                // double / Double
+                else if (type == double.class || type == Double.class) {
+                    valeurConvertie = Double.parseDouble(valeur);
+                }
+
+                // float / Float
+                else if (type == float.class || type == Float.class) {
+                    valeurConvertie = Float.parseFloat(valeur);
+                }
+
+                // boolean / Boolean
+                else if (type == boolean.class || type == Boolean.class) {
+                    valeurConvertie = Boolean.parseBoolean(valeur);
+                }
+
+                // short / Short
+                else if (type == short.class || type == Short.class) {
+                    valeurConvertie = Short.parseShort(valeur);
+                }
+
+                // byte / Byte
+                else if (type == byte.class || type == Byte.class) {
+                    valeurConvertie = Byte.parseByte(valeur);
+                }
+
+                // char / Character
+                else if (type == char.class || type == Character.class) {
+                    valeurConvertie = valeur.charAt(0);
+                }
+
+                arguments[i] = valeurConvertie;
+
                 System.out.println("Parametre : " + parameter.getName());
                 System.out.println("Type : " + parameter.getType().getSimpleName());
+                System.out.println("Valeur reçue : " + valeur);
+                System.out.println("Valeur convertie : " + valeurConvertie);
             }
 
             // Exécution
-            Object result = method.invoke(controller);
+            Object result = method.invoke(controller, arguments);
 
             // ----------- Cas 1 : la méthode retourne un ModelView ----------
             if (result instanceof ModelView) {
@@ -115,10 +175,9 @@ public class FrontControllerServlet extends HttpServlet {
                 }
 
                 // Construction du chemin de la vue
-                String view =
-                        PREFIX
-                                + mv.getView()
-                                + SUFFIX;
+                String view = PREFIX
+                        + mv.getView()
+                        + SUFFIX;
 
                 // Redirection vers la JSP
                 request.getRequestDispatcher(view)
