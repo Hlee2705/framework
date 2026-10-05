@@ -27,4 +27,8 @@ try and catch
 
 ## traiter correctement les parametres boolean 
 
+## Permettre aux contrôleurs de recevoir des paramètres dans leurs méthodes métier
+
+### Creer une annotation : RequestParam.java
+
 

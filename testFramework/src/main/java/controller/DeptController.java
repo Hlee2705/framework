@@ -60,37 +60,37 @@ public class DeptController {
         return mv;
     }
 
-    @UrlMapping(value = "dept/test-param", method = "GET")
-    public String testParam(String nom, String prenom) {
-        return "Test parametres";
-    }
+    // @UrlMapping(value = "dept/test-param", method = "GET")
+    // public String testParam(String nom, String prenom) {
+    //     return "Test parametres";
+    // }
 
-    @UrlMapping(value = "dept/test-age", method = "GET")
-    public String testAge(int age) {
-        return "Age reçu:  " + age;
-    }
+    // @UrlMapping(value = "dept/test-age", method = "GET")
+    // public String testAge(int age) {
+    //     return "Age reçu:  " + age;
+    // }
 
-    @UrlMapping(value = "dept/test-types", method = "GET")
-    public String testTypes(
-            String nom,
-            int age,
-            double salaire,
-            boolean actif,
-            long numero) {
-        return "Nom : " + nom
-                + ", Age : " + age
-                + ", Salaire : " + salaire
-                + ", Actif : " + actif
-                + ", Numero : " + numero;
-    }
+    // @UrlMapping(value = "dept/test-types", method = "GET")
+    // public String testTypes(
+    //         String nom,
+    //         int age,
+    //         double salaire,
+    //         boolean actif,
+    //         long numero) {
+    //     return "Nom : " + nom
+    //             + ", Age : " + age
+    //             + ", Salaire : " + salaire
+    //             + ", Actif : " + actif
+    //             + ", Numero : " + numero;
+    // }
 
-    @UrlMapping(value = "dept/test-double", method = "GET")
-    public String testDouble(double salaire) {
-        return "Salaire reçu : " + salaire;
-    }
+    // @UrlMapping(value = "dept/test-double", method = "GET")
+    // public String testDouble(double salaire) {
+    //     return "Salaire reçu : " + salaire;
+    // }
 
-    @UrlMapping(value = "dept/test-boolean", method = "GET")
-    public String testBoolean(boolean actif) {
-        return "Actif : " + actif;
-    }
+    // @UrlMapping(value = "dept/test-boolean", method = "GET")
+    // public String testBoolean(boolean actif) {
+    //     return "Actif : " + actif;
+    // }
 }
