@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import com.framework.annotation.ApiRest;
 import com.framework.annotation.RequestParam;
 import com.framework.model.Mapping;
 import com.framework.model.ModelView;
 import com.framework.model.UrlMethod;
+import com.google.gson.Gson;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -17,6 +19,9 @@ import jakarta.servlet.http.HttpServletResponse;
 public class FrontControllerServlet extends HttpServlet {
 
     private Map<UrlMethod, Mapping> mappings;
+
+    // creer un objte gson
+    private Gson gson = new Gson();
 
     // Préfixe et suffixe des vues
     private static final String PREFIX = "/WEB-INF/views/";
@@ -91,7 +96,7 @@ public class FrontControllerServlet extends HttpServlet {
             // Méthode à appeler
             Method method = mapping.getMethod();
 
-            // afficher les parametres detectes : recuperation des parametres
+            // Récupération des paramètres
             java.lang.reflect.Parameter[] parameters = method.getParameters();
 
             Object[] arguments = new Object[parameters.length];
@@ -127,7 +132,28 @@ public class FrontControllerServlet extends HttpServlet {
             // Exécution
             Object result = method.invoke(controller, arguments);
 
-            // ----------- Cas 1 : la méthode retourne un ModelView ----------
+            // Cas 1 : API REST
+            if (method.isAnnotationPresent(ApiRest.class)) {
+
+                response.setContentType("application/json;charset=UTF-8");
+
+                if (result instanceof String) {
+
+                    // Le développeur retourne déjà du JSON
+                    response.getWriter().print(result);
+
+                } else {
+
+                    // Le framework transforme l'objet Java en JSON
+                    String json = gson.toJson(result);
+
+                    response.getWriter().print(json);
+                }
+
+                return;
+            }
+
+            // Cas 2 : ModelView
             if (result instanceof ModelView) {
 
                 ModelView mv = (ModelView) result;
