@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import com.framework.annotation.RequestParam;
 import com.framework.model.Mapping;
 import com.framework.model.ModelView;
 import com.framework.model.UrlMethod;
@@ -100,6 +101,11 @@ public class FrontControllerServlet extends HttpServlet {
                 java.lang.reflect.Parameter parameter = parameters[i];
 
                 String nomParametre = parameter.getName();
+
+                if (parameter.isAnnotationPresent(RequestParam.class)) {
+                    RequestParam annotation = parameter.getAnnotation(RequestParam.class);
+                    nomParametre = annotation.value();
+                }
 
                 Class<?> type = parameter.getType();
 
