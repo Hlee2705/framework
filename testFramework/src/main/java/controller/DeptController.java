@@ -62,16 +62,6 @@ public class DeptController {
         return mv;
     }
 
-    @UrlMapping(value = "dept/test-request-param", method = "GET")
-    public String testRequestParam(
-            @RequestParam("nom") String nomUtilisateur,
-            @RequestParam("age") int ageUtilisateur) {
-
-        return "Nom : " + nomUtilisateur
-                + ", Age : " + ageUtilisateur;
-
-    }
-
     @UrlMapping(value = "api/test", method = "GET")
     @ApiRest
     public String testerApi() {
@@ -101,4 +91,22 @@ public class DeptController {
 
         return v;
     }
+
+    @UrlMapping(value = "dept/test-request-param", method = "GET")
+    public String testRequestParam(
+            @RequestParam("nom") String nomUtilisateur,
+            @RequestParam("age") int ageUtilisateur) {
+
+        return "Nom : " + nomUtilisateur
+                + ", Age : " + ageUtilisateur;
+
+    }
+
+    @ApiRest
+    @UrlMapping(value = "api/employe-request-param", method = "POST")
+    public Employe save(@RequestParam("nom") String nomEmploye) {
+        Employe employe = new Employe(1, nomEmploye);
+        return employe;
+    }
+
 }
