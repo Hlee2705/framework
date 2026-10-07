@@ -109,4 +109,10 @@ public class DeptController {
         return employe;
     }
 
+    @UrlMapping(value = "api/employe-requestParam", method = "POST")
+    public Employe saveE(@RequestParam("nom") String nomEmploye) {
+        Employe employe = new Employe(1, nomEmploye);
+        return employe;
+    }
+
 }
