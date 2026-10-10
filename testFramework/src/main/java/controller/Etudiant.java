@@ -38,4 +38,8 @@ public class Etudiant {
         this.nom = nom;
     }
 
+    @Override
+    public String toString() {
+        return "Etudiant{id=" + id + ", etu='\" + etu + \"', nom='" + nom + "'}";
+    }
 }
