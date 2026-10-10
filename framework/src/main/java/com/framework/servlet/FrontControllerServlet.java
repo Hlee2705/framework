@@ -133,6 +133,9 @@ public class FrontControllerServlet extends HttpServlet {
                     // newInstance() : appelle ce constructeur sans argument
                     valeurConvertie = type.getDeclaredConstructor().newInstance();
 
+                    // remplir automatiquement ses proprietes
+                    remplirObjet(valeurConvertie, request);
+
                     System.out.println("Objet cree : " + valeurConvertie);
                 }
 

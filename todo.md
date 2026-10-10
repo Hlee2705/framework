@@ -111,3 +111,5 @@ try and catch
 
 ## Preparer le remplissage automatique des objets 
 ### ajouter une methode remplirObjet() dans FrontControllerServlet
+
+## Remplir l'objet avant d'appeler la methode du controleur 
