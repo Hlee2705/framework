@@ -40,6 +40,6 @@ public class Etudiant {
 
     @Override
     public String toString() {
-        return "Etudiant{id=" + id + ", etu='\" + etu + \"', nom='" + nom + "'}";
+        return "Etudiant{id=" + id + ", etu='" + etu + "', nom='" + nom + "'}";
     }
 }
