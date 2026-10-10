@@ -108,3 +108,6 @@ try and catch
 ## Creer automatiquement un objet 
 - getDeclaredConstructor(): recherche le constructor sans argument
 - newInstance() : appelle ce constructeur sans argument
+
+## Preparer le remplissage automatique des objets 
+### ajouter une methode remplirObjet() dans FrontControllerServlet

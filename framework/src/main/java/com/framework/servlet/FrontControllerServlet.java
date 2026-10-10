@@ -1,6 +1,7 @@
 package com.framework.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -336,5 +337,40 @@ public class FrontControllerServlet extends HttpServlet {
                 || type == char.class || type == Character.class;
     }
 
+    private void remplirObjet(Object objet, HttpServletRequest request) throws Exception{
+        // recuperer la classe de l'objet
+        Class<?> type = objet.getClass();
+
+        // parcourir les attributs de la classe 
+        Field[] attibuts = type.getDeclaredFields();
+
+        for (Field attribut : attibuts) {
+            
+            // recuperer le nom et le type de l'attribut
+            String nomAttribut = attribut.getName();
+            Class<?> typeAttribut = attribut.getType();
+
+            // recuperer la valeur envoyee par le formulaire 
+            String valeur = request.getParameter(nomAttribut);
+            
+            // ignorer les attributs sans valeur correspondante
+            if(valeur == null){
+                continue;
+            }
+
+            // convertir la valeur vers le type de l'attribut
+            Object valeurConvertie = convertirParametre(valeur, type, nomAttribut);
+
+            // construire le nom du setter 
+            String nomSetter = "set" + Character.toUpperCase(nomAttribut.charAt(0))
+            + nomAttribut.substring(1);
+
+            // rechercher le setter correspondant 
+            Method setter = type.getMethod(nomSetter, typeAttribut);
+
+            // appeler le setter pour affecter la valeur
+            setter.invoke(objet, valeurConvertie);
+        }
+    }
 
 }
