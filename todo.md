@@ -95,4 +95,12 @@ try and catch
 
 ## tester dans deptController
 
-    
+# Sprint7bis : binding automatique des objets et des parametres 
+
+## ajouter un constructeur sans argument dans les objets 
+
+## dans FrontControllerServlet : distinguer les types simples des objets 
+- si le type est simple ou s'il s'agit d'un objet à construire
+### Ajouter une methode à la fin de FrontControllerServlet : estTipeSimple(type)
+- pour reconnaitre les types simples 
+### Adapter la preparation des arguments : integrer estTypeSimple() dans la boucle qui prepare les arguments 
