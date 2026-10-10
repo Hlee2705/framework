@@ -1,6 +1,7 @@
 package com.framework.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -114,19 +115,36 @@ public class FrontControllerServlet extends HttpServlet {
 
                 Class<?> type = parameter.getType();
 
-                String valeur = request.getParameter(nomParametre);
+                Object valeurConvertie;
 
-                Object valeurConvertie = convertirParametre(
-                        valeur,
-                        type,
-                        nomParametre);
+                if(estTypeSimple(type)){
+
+                    // cas parametre simple
+                    String valeur = request.getParameter(nomParametre);
+
+                    valeurConvertie = convertirParametre(valeur, type, nomParametre);
+                
+                } else{
+
+                    // cas parametre objet
+                    System.out.println("Objet à construire : " + type.getSimpleName());
+
+                    // getDeclaredConstructor(): recherche le constructor sans argument
+                    // newInstance() : appelle ce constructeur sans argument
+                    valeurConvertie = type.getDeclaredConstructor().newInstance();
+
+                    // remplir automatiquement ses proprietes
+                    remplirObjet(valeurConvertie, request);
+
+                    System.out.println("Objet cree : " + valeurConvertie);
+                }
 
                 arguments[i] = valeurConvertie;
 
-                System.out.println("Parametre : " + nomParametre);
-                System.out.println("Type : " + type.getSimpleName());
-                System.out.println("Valeur reçue : " + valeur);
-                System.out.println("Valeur convertie : " + valeurConvertie);
+                // System.out.println("Parametre : " + nomParametre);
+                // System.out.println("Type : " + type.getSimpleName());
+                // System.out.println("Valeur reçue : " + valeur);
+                // System.out.println("Valeur convertie : " + valeurConvertie);
             }
 
             // Exécution
@@ -307,4 +325,55 @@ public class FrontControllerServlet extends HttpServlet {
                             + nomParametre);
         }
     }
+
+    // methode pour reconnaitre les types simples 
+    private boolean estTypeSimple(Class<?> type) {
+
+        return type == String.class
+                || type == int.class || type == Integer.class
+                || type == long.class || type == Long.class
+                || type == double.class || type == Double.class
+                || type == float.class || type == Float.class
+                || type == boolean.class || type == Boolean.class
+                || type == short.class || type == Short.class
+                || type == byte.class || type == Byte.class
+                || type == char.class || type == Character.class;
+    }
+
+    private void remplirObjet(Object objet, HttpServletRequest request) throws Exception{
+        // recuperer la classe de l'objet
+        Class<?> type = objet.getClass();
+
+        // parcourir les attributs de la classe 
+        Field[] attibuts = type.getDeclaredFields();
+
+        for (Field attribut : attibuts) {
+            
+            // recuperer le nom et le type de l'attribut
+            String nomAttribut = attribut.getName();
+            Class<?> typeAttribut = attribut.getType();
+
+            // recuperer la valeur envoyee par le formulaire 
+            String valeur = request.getParameter(nomAttribut);
+            
+            // ignorer les attributs sans valeur correspondante
+            if(valeur == null){
+                continue;
+            }
+
+            // convertir la valeur vers le type de l'attribut
+            Object valeurConvertie = convertirParametre(valeur, type, nomAttribut);
+
+            // construire le nom du setter 
+            String nomSetter = "set" + Character.toUpperCase(nomAttribut.charAt(0))
+            + nomAttribut.substring(1);
+
+            // rechercher le setter correspondant 
+            Method setter = type.getMethod(nomSetter, typeAttribut);
+
+            // appeler le setter pour affecter la valeur
+            setter.invoke(objet, valeurConvertie);
+        }
+    }
+
 }

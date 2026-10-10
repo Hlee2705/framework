@@ -4,6 +4,9 @@ public class Employe {
     private int id;
     private String nom;
 
+    public Employe() {
+    }
+
     public Employe(int id, String nom) {
         this.id = id;
         this.nom = nom;
@@ -25,8 +28,8 @@ public class Employe {
         this.nom = nom;
     }
 
-    @Override 
-    public String toString(){
+    @Override
+    public String toString() {
         return "Employe{id=" + id + ", nom='" + nom + "'}";
     }
 

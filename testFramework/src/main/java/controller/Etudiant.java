@@ -3,10 +3,15 @@ package controller;
 public class Etudiant {
     private int id;
     private String etu;
+    private String nom;
 
-    public Etudiant(int id, String etu) {
+    public Etudiant() {
+    }
+
+    public Etudiant(int id, String etu, String nom) {
         this.id = id;
         this.etu = etu;
+        this.nom = nom;
     }
 
     public int getId() {
@@ -25,4 +30,16 @@ public class Etudiant {
         this.etu = etu;
     }
 
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    @Override
+    public String toString() {
+        return "Etudiant{id=" + id + ", etu='" + etu + "', nom='" + nom + "'}";
+    }
 }

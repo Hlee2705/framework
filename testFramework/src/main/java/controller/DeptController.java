@@ -79,7 +79,7 @@ public class DeptController {
     @UrlMapping(value = "api/etudiant", method = "GET")
     @ApiRest
     public Etudiant testEtudiant() {
-        Etudiant etudiant = new Etudiant(1, "ETU003949");
+        Etudiant etudiant = new Etudiant(1, "ETU003949", "koto");
 
         return etudiant;
     }
@@ -115,4 +115,13 @@ public class DeptController {
         return employe;
     }
 
+    @UrlMapping(value = "api/employe-binding", method = "POST")
+    public Employe testerbinding(Employe e){
+        return e;
+    }
+
+    @UrlMapping(value = "api/etudiant-binding", method = "POST")
+    public Etudiant saveEtudiant(Etudiant e){
+        return e;
+    }
 }
