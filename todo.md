@@ -104,3 +104,4 @@ try and catch
 ### Ajouter une methode à la fin de FrontControllerServlet : estTipeSimple(type)
 - pour reconnaitre les types simples 
 ### Adapter la preparation des arguments : integrer estTypeSimple() dans la boucle qui prepare les arguments 
+

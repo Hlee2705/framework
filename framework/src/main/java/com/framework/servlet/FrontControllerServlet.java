@@ -114,19 +114,30 @@ public class FrontControllerServlet extends HttpServlet {
 
                 Class<?> type = parameter.getType();
 
-                String valeur = request.getParameter(nomParametre);
+                Object valeurConvertie;
 
-                Object valeurConvertie = convertirParametre(
-                        valeur,
-                        type,
-                        nomParametre);
+                if(estTypeSimple(type)){
+
+                    // cas parametre simple
+                    String valeur = request.getParameter(nomParametre);
+
+                    valeurConvertie = convertirParametre(valeur, type, nomParametre);
+                
+                } else{
+
+                    // cas parametre objet
+                    valeurConvertie = null;
+
+                    System.out.println("Objet à construire : " + type.getSimpleName());
+
+                }
 
                 arguments[i] = valeurConvertie;
 
-                System.out.println("Parametre : " + nomParametre);
-                System.out.println("Type : " + type.getSimpleName());
-                System.out.println("Valeur reçue : " + valeur);
-                System.out.println("Valeur convertie : " + valeurConvertie);
+                // System.out.println("Parametre : " + nomParametre);
+                // System.out.println("Type : " + type.getSimpleName());
+                // System.out.println("Valeur reçue : " + valeur);
+                // System.out.println("Valeur convertie : " + valeurConvertie);
             }
 
             // Exécution
