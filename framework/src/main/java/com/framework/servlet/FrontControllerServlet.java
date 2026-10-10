@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import com.framework.annotation.ApiRest;
+import com.framework.annotation.RequestParam;
 import com.framework.model.Mapping;
 import com.framework.model.ModelView;
 import com.framework.model.UrlMethod;
@@ -95,10 +96,43 @@ public class FrontControllerServlet extends HttpServlet {
             // Méthode à appeler
             Method method = mapping.getMethod();
 
-            // Exécution
-            Object result = method.invoke(controller);
+            // Récupération des paramètres
+            java.lang.reflect.Parameter[] parameters = method.getParameters();
 
-            // cas 1 : api rest
+            Object[] arguments = new Object[parameters.length];
+
+            for (int i = 0; i < parameters.length; i++) {
+
+                java.lang.reflect.Parameter parameter = parameters[i];
+
+                String nomParametre = parameter.getName();
+
+                if (parameter.isAnnotationPresent(RequestParam.class)) {
+                    RequestParam annotation = parameter.getAnnotation(RequestParam.class);
+                    nomParametre = annotation.value();
+                }
+
+                Class<?> type = parameter.getType();
+
+                String valeur = request.getParameter(nomParametre);
+
+                Object valeurConvertie = convertirParametre(
+                        valeur,
+                        type,
+                        nomParametre);
+
+                arguments[i] = valeurConvertie;
+
+                System.out.println("Parametre : " + nomParametre);
+                System.out.println("Type : " + type.getSimpleName());
+                System.out.println("Valeur reçue : " + valeur);
+                System.out.println("Valeur convertie : " + valeurConvertie);
+            }
+
+            // Exécution
+            Object result = method.invoke(controller, arguments);
+
+            // Cas 1 : API REST
             if (method.isAnnotationPresent(ApiRest.class)) {
 
                 response.setContentType("application/json;charset=UTF-8");
@@ -110,7 +144,7 @@ public class FrontControllerServlet extends HttpServlet {
 
                 } else {
 
-                    // le framework transforme l'objet Java en json
+                    // Le framework transforme l'objet Java en JSON
                     String json = gson.toJson(result);
 
                     response.getWriter().print(json);
@@ -119,7 +153,7 @@ public class FrontControllerServlet extends HttpServlet {
                 return;
             }
 
-            // ----------- Cas 2 : la méthode retourne un ModelView ----------
+            // Cas 2 : ModelView
             if (result instanceof ModelView) {
 
                 ModelView mv = (ModelView) result;
@@ -157,8 +191,120 @@ public class FrontControllerServlet extends HttpServlet {
                     + result
                     + "</p>");
 
+        } catch (ParametreInvalideException e) {
+
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setContentType("text/plain;charset=UTF-8");
+
+            response.getWriter().println(e.getMessage());
+
         } catch (Exception e) {
+
             throw new ServletException(e);
+        }
+    }
+
+    private static class ParametreInvalideException extends Exception {
+
+        public ParametreInvalideException(String message) {
+            super(message);
+        }
+    }
+
+    private Object convertirParametre(
+            String valeur,
+            Class<?> type,
+            String nomParametre)
+            throws ParametreInvalideException {
+
+        // Paramètre absent
+        if (valeur == null) {
+
+            // Les types primitifs ne peuvent pas recevoir null
+            if (type.isPrimitive()) {
+                throw new ParametreInvalideException(
+                        "Paramètre obligatoire manquant : "
+                                + nomParametre);
+            }
+
+            // Pour les types objets, null est accepté
+            return null;
+        }
+
+        try {
+
+            // String
+            if (type == String.class) {
+                return valeur;
+            }
+
+            // int / Integer
+            else if (type == int.class || type == Integer.class) {
+                return Integer.parseInt(valeur);
+            }
+
+            // long / Long
+            else if (type == long.class || type == Long.class) {
+                return Long.parseLong(valeur);
+            }
+
+            // double / Double
+            else if (type == double.class || type == Double.class) {
+                return Double.parseDouble(valeur);
+            }
+
+            // float / Float
+            else if (type == float.class || type == Float.class) {
+                return Float.parseFloat(valeur);
+            }
+
+            // boolean / Boolean
+            else if (type == boolean.class || type == Boolean.class) {
+
+                if (!valeur.equalsIgnoreCase("true")
+                        && !valeur.equalsIgnoreCase("false")) {
+
+                    throw new ParametreInvalideException(
+                            "Valeur invalide pour le paramètre : "
+                                    + nomParametre
+                                    + ". Valeurs attendues : true ou false");
+                }
+
+                return Boolean.parseBoolean(valeur);
+            }
+
+            // short / Short
+            else if (type == short.class || type == Short.class) {
+                return Short.parseShort(valeur);
+            }
+
+            // byte / Byte
+            else if (type == byte.class || type == Byte.class) {
+                return Byte.parseByte(valeur);
+            }
+
+            // char / Character
+            else if (type == char.class || type == Character.class) {
+
+                if (valeur.length() != 1) {
+
+                    throw new ParametreInvalideException(
+                            "Valeur invalide pour le paramètre : "
+                                    + nomParametre
+                                    + ". Un seul caractère est attendu.");
+                }
+
+                return valeur.charAt(0);
+            }
+
+            // Type non pris en charge
+            return valeur;
+
+        } catch (NumberFormatException e) {
+
+            throw new ParametreInvalideException(
+                    "Valeur invalide pour le paramètre : "
+                            + nomParametre);
         }
     }
 }

@@ -2,6 +2,7 @@ package controller;
 
 import org.springframework.stereotype.Controller;
 
+import com.framework.annotation.RequestParam;
 import com.framework.annotation.ApiRest;
 import com.framework.annotation.UrlMapping;
 import com.framework.model.ModelView;
@@ -62,32 +63,56 @@ public class DeptController {
     }
 
     @UrlMapping(value = "api/test", method = "GET")
-    @ApiRest 
-    public String testerApi(){
+    @ApiRest
+    public String testerApi() {
         return "{\"message\":\"Bonjour depuis mon API\"}";
     }
 
     @UrlMapping(value = "api/employe", method = "GET")
-    @ApiRest 
-    public Employe testEmploye(){
+    @ApiRest
+    public Employe testEmploye() {
         Employe employe = new Employe(1, "Rakoto");
 
         return employe;
     }
 
     @UrlMapping(value = "api/etudiant", method = "GET")
-    @ApiRest 
-    public Etudiant testEtudiant(){
+    @ApiRest
+    public Etudiant testEtudiant() {
         Etudiant etudiant = new Etudiant(1, "ETU003949");
 
         return etudiant;
     }
 
     @UrlMapping(value = "api/voiture", method = "GET")
-    @ApiRest 
-    public Voiture testVoiture(){
-        Voiture v = new Voiture(1, "bmw","dddjdj");
+    @ApiRest
+    public Voiture testVoiture() {
+        Voiture v = new Voiture(1, "bmw", "dddjdj");
 
         return v;
     }
+
+    @UrlMapping(value = "dept/test-request-param", method = "GET")
+    public String testRequestParam(
+            @RequestParam("nom") String nomUtilisateur,
+            @RequestParam("age") int ageUtilisateur) {
+
+        return "Nom : " + nomUtilisateur
+                + ", Age : " + ageUtilisateur;
+
+    }
+
+    @ApiRest
+    @UrlMapping(value = "api/employe-request-param", method = "POST")
+    public Employe save(@RequestParam("nom") String nomEmploye) {
+        Employe employe = new Employe(1, nomEmploye);
+        return employe;
+    }
+
+    @UrlMapping(value = "api/employe-requestParam", method = "POST")
+    public Employe saveE(@RequestParam("nom") String nomEmploye) {
+        Employe employe = new Employe(1, nomEmploye);
+        return employe;
+    }
+
 }
