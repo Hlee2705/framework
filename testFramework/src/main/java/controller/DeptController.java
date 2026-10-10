@@ -115,4 +115,9 @@ public class DeptController {
         return employe;
     }
 
+    @UrlMapping(value = "api/employe-binding", method = "POST")
+    public Employe testerbinding(Employe e){
+        return e;
+    }
+
 }

@@ -113,3 +113,6 @@ try and catch
 ### ajouter une methode remplirObjet() dans FrontControllerServlet
 
 ## Remplir l'objet avant d'appeler la methode du controleur 
+- remplir l'objet dans la boucle ava,t d'appeler la methode du controleur
+
+## test : ajouter une methode qui reçoit directement un objet dans DeptController
