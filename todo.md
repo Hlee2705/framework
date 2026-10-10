@@ -105,3 +105,6 @@ try and catch
 - pour reconnaitre les types simples 
 ### Adapter la preparation des arguments : integrer estTypeSimple() dans la boucle qui prepare les arguments 
 
+## Creer automatiquement un objet 
+- getDeclaredConstructor(): recherche le constructor sans argument
+- newInstance() : appelle ce constructeur sans argument

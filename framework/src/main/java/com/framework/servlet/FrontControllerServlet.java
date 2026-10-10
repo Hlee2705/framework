@@ -126,10 +126,13 @@ public class FrontControllerServlet extends HttpServlet {
                 } else{
 
                     // cas parametre objet
-                    valeurConvertie = null;
-
                     System.out.println("Objet à construire : " + type.getSimpleName());
 
+                    // getDeclaredConstructor(): recherche le constructor sans argument
+                    // newInstance() : appelle ce constructeur sans argument
+                    valeurConvertie = type.getDeclaredConstructor().newInstance();
+
+                    System.out.println("Objet cree : " + valeurConvertie);
                 }
 
                 arguments[i] = valeurConvertie;
