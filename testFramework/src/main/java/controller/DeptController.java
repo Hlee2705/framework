@@ -117,17 +117,19 @@ public class DeptController {
     }
 
     @UrlMapping(value = "api/employe-binding", method = "POST")
-    public Employe testerbinding(Employe e){
+    public Employe testerbinding(Employe e) {
         return e;
     }
 
     @UrlMapping(value = "api/etudiant-binding", method = "POST")
-    public Etudiant saveEtudiant(Etudiant e){
+    public Etudiant saveEtudiant(Etudiant e) {
         return e;
     }
 
-    @UrlMapping(value = "upload", method = "POST")
-    public String upload(MapFile fichier){
-        return "Fichier reçu : " + fichier.getNom();
+    @UrlMapping(value = "api/upload", method = "POST")
+    public String upload(MapFile fichier) {
+        return "Nom : " + fichier.getNom()
+                + ", Extension : " + fichier.getExtension()
+                + ", Taille : " + fichier.getBytes().length + " octets";
     }
 }

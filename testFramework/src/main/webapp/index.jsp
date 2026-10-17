@@ -16,7 +16,7 @@
     </form>
 
     <h1>Envoyer un fichier</h1>
-    <form action="upload" method="POST" enctype="multipart/form-data">
+    <form action="api/upload" method="POST" enctype="multipart/form-data">
         <label for="fichier">Choisir un fichier : </label>
         <input type="file" id="fichier" name="fichier">
         <br><br>

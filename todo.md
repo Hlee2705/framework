@@ -194,3 +194,40 @@ try and catch
 - ajouter un formulaire permettant d'envoyer un fichier 
 
 4. ajouter une methode d'action dans le controller 
+- Verifier les informations de Mapfile dans la methode upload()
+
+5. Configurer le répertoire dans lequel les fichiers seront stockés
+- Creer le fichier framework.properties 
+     - `framework/src/main/resources/framework.properties`
+     - ajouter le chemin du dossier pour stocker les fichiers 
+
+6. Créer une methode pour lire la configuration dans `FrontControllerServlet`
+- ajouter les imports: 
+     ```Java
+     import java.io.IOException;
+     import java.io.InputStream;
+     import java.util.Properties;
+     ```
+     - Properties permet de lire les propriétés d'un fichier .properties.
+     - InputStream permet de lire le fichier depuis les ressources du projet.
+
+- ajouter un attribut pour le repertoire : 
+     ```Java
+     private String uploadDirectory; 
+     ```
+     - cette variable contiendra le chemin recupere depuis le fichier de configuration
+
+- ajouter une methode de chargement : `chargerConfiguration()`
+
+7. Creer une methode pour enregistrer le fichier dans `FrontControllerServlet`
+- ajouter les imports 
+     ```Java
+     import java.io.File;
+     import java.io.FileOutputStream;
+     import java.io.IOException;
+     ```
+- ajouter la methode `enregistrerFichier()`
+     - Vérifie que l'objet MapFile contient bien des données.
+     - Crée le répertoire configuré si nécessaire.
+     - Crée le fichier de destination.
+     - Écrit les bytes reçus dans ce fichier.
