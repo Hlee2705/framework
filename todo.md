@@ -231,3 +231,5 @@ try and catch
      - Crée le répertoire configuré si nécessaire.
      - Crée le fichier de destination.
      - Écrit les bytes reçus dans ce fichier.
+
+- Integrer l'enrgistrement dans la boucle binding

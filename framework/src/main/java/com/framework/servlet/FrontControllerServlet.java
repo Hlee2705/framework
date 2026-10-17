@@ -138,7 +138,16 @@ public class FrontControllerServlet extends HttpServlet {
 
                 if (type == MapFile.class) {
                     // cas parametre fichier
-                    valeurConvertie = recupererFichier(request, nomParametre);
+                    MapFile fichier = recupererFichier(request, nomParametre);
+
+                    if(fichier != null){
+                        String chemin = enregistrerFichier(fichier);
+
+                        System.out.println("Fichier enregistré : " + chemin);
+
+                    }
+
+                    valeurConvertie = fichier;
 
                 } else if (estTypeSimple(type)) {
 
