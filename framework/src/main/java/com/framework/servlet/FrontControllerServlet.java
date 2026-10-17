@@ -1,28 +1,39 @@
 package com.framework.servlet;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Properties;
 
 import com.framework.annotation.ApiRest;
 import com.framework.annotation.RequestParam;
+import com.framework.model.MapFile;
 import com.framework.model.Mapping;
 import com.framework.model.ModelView;
 import com.framework.model.UrlMethod;
 import com.google.gson.Gson;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 
+@MultipartConfig
 public class FrontControllerServlet extends HttpServlet {
 
     private Map<UrlMethod, Mapping> mappings;
 
     // creer un objte gson
     private Gson gson = new Gson();
+
+    // attribut pour le repertoire
+    private String uploadDirectory;
 
     // Préfixe et suffixe des vues
     private static final String PREFIX = "/WEB-INF/views/";
@@ -42,6 +53,14 @@ public class FrontControllerServlet extends HttpServlet {
         System.out.println("FrontController initialisé");
         System.out.println("Nombre de routes : " + mappings.size());
         System.out.println("================================");
+
+        try {
+            chargerConfiguration();
+            System.out.println("Répertoire d'upload : " + uploadDirectory);
+        } catch (IOException e) {
+            throw new ServletException(
+                    "Erreur lors du chargement de la configuration.", e);
+        }
     }
 
     @Override
@@ -117,14 +136,27 @@ public class FrontControllerServlet extends HttpServlet {
 
                 Object valeurConvertie;
 
-                if(estTypeSimple(type)){
+                if (type == MapFile.class) {
+                    // cas parametre fichier
+                    MapFile fichier = recupererFichier(request, nomParametre);
+
+                    if(fichier != null){
+                        String chemin = enregistrerFichier(fichier);
+
+                        System.out.println("Fichier enregistré : " + chemin);
+
+                    }
+
+                    valeurConvertie = fichier;
+
+                } else if (estTypeSimple(type)) {
 
                     // cas parametre simple
                     String valeur = request.getParameter(nomParametre);
 
                     valeurConvertie = convertirParametre(valeur, type, nomParametre);
-                
-                } else{
+
+                } else {
 
                     // cas parametre objet
                     System.out.println("Objet à construire : " + type.getSimpleName());
@@ -326,7 +358,7 @@ public class FrontControllerServlet extends HttpServlet {
         }
     }
 
-    // methode pour reconnaitre les types simples 
+    // methode pour reconnaitre les types simples
     private boolean estTypeSimple(Class<?> type) {
 
         return type == String.class
@@ -340,40 +372,109 @@ public class FrontControllerServlet extends HttpServlet {
                 || type == char.class || type == Character.class;
     }
 
-    private void remplirObjet(Object objet, HttpServletRequest request) throws Exception{
+    private void remplirObjet(Object objet, HttpServletRequest request) throws Exception {
         // recuperer la classe de l'objet
         Class<?> type = objet.getClass();
 
-        // parcourir les attributs de la classe 
+        // parcourir les attributs de la classe
         Field[] attibuts = type.getDeclaredFields();
 
         for (Field attribut : attibuts) {
-            
+
             // recuperer le nom et le type de l'attribut
             String nomAttribut = attribut.getName();
             Class<?> typeAttribut = attribut.getType();
 
-            // recuperer la valeur envoyee par le formulaire 
+            // recuperer la valeur envoyee par le formulaire
             String valeur = request.getParameter(nomAttribut);
-            
+
             // ignorer les attributs sans valeur correspondante
-            if(valeur == null){
+            if (valeur == null) {
                 continue;
             }
 
             // convertir la valeur vers le type de l'attribut
             Object valeurConvertie = convertirParametre(valeur, type, nomAttribut);
 
-            // construire le nom du setter 
+            // construire le nom du setter
             String nomSetter = "set" + Character.toUpperCase(nomAttribut.charAt(0))
-            + nomAttribut.substring(1);
+                    + nomAttribut.substring(1);
 
-            // rechercher le setter correspondant 
+            // rechercher le setter correspondant
             Method setter = type.getMethod(nomSetter, typeAttribut);
 
             // appeler le setter pour affecter la valeur
             setter.invoke(objet, valeurConvertie);
         }
+    }
+
+    private MapFile recupererFichier(HttpServletRequest request, String nomParametre) throws Exception {
+        // recuperation de la partie (Part) du fichier
+        Part partie = request.getPart(nomParametre);
+
+        // validation
+        if (partie == null || partie.getSubmittedFileName() == null || partie.getSubmittedFileName().isEmpty()) {
+            return null;
+        }
+
+        String nomFichier = partie.getSubmittedFileName();
+
+        String extension = "";
+
+        int positionPoint = nomFichier.lastIndexOf('.');
+
+        if (positionPoint >= 0 && positionPoint < nomFichier.length() - 1) {
+            extension = nomFichier.substring(positionPoint + 1);
+        }
+
+        // lit le contenu du fichier dans un tableau de bytes
+        byte[] contenu = partie.getInputStream().readAllBytes();
+
+        return new MapFile(nomFichier, extension, contenu);
+    }
+
+    private void chargerConfiguration() throws IOException {
+        Properties properties = new Properties();
+
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("framework.properties")) {
+            if (input == null) {
+                throw new IOException("Le fichier framework.properties est introuvable");
+            }
+
+            properties.load(input);
+
+            uploadDirectory = properties.getProperty("upload.directory");
+
+            if (uploadDirectory == null || uploadDirectory.trim().isEmpty()) {
+                throw new IOException(
+                        "La propriété upload.directory est absente ou vide.");
+            }
+        }
+    }
+    
+    private String enregistrerFichier(MapFile fichier) throws IOException{
+        // verifier si le fichier est bien reçu
+        if(fichier == null || fichier.getBytes() == null){
+            throw new IOException("Aucun fichier reçu.");
+        }
+
+        // recuperer le repertoire configuré
+        File repertoire = new File(uploadDirectory);
+
+        // creer le repertoire s'il n'existe pas 
+        if(!repertoire.exists()){
+            repertoire.mkdirs();
+        }
+
+        // construire le chemin du fichier
+        File destination = new File(repertoire, fichier.getNom());
+
+        // ecrire le contenu du fichier sur le disque
+        try(FileOutputStream output = new FileOutputStream(destination)){
+            output.write(fichier.getBytes());
+        }
+
+        return destination.getAbsolutePath();
     }
 
 }

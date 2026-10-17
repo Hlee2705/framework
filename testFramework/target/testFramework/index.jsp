@@ -14,5 +14,13 @@
         <input id="nom" name="nom" type="text" placeholder="nom..." required>
         <button type="submit">enregistrer</button>
     </form>
+
+    <h1>Envoyer un fichier</h1>
+    <form action="api/upload" method="POST" enctype="multipart/form-data">
+        <label for="fichier">Choisir un fichier : </label>
+        <input type="file" id="fichier" name="fichier">
+        <br><br>
+        <button type="submit">Envoyer</button>
+    </form>
 </body>
 </html>
