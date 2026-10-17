@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import com.framework.annotation.RequestParam;
 import com.framework.annotation.ApiRest;
 import com.framework.annotation.UrlMapping;
+import com.framework.model.MapFile;
 import com.framework.model.ModelView;
 
 @Controller
@@ -123,5 +124,10 @@ public class DeptController {
     @UrlMapping(value = "api/etudiant-binding", method = "POST")
     public Etudiant saveEtudiant(Etudiant e){
         return e;
+    }
+
+    @UrlMapping(value = "api/upload", method = "POST")
+    public String upload(MapFile fichier){
+        return "Fichier reçu : " + fichier.getNom();
     }
 }

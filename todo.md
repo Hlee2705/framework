@@ -192,3 +192,5 @@ try and catch
 
 3. Creer le formulaire d'upload
 - ajouter un formulaire permettant d'envoyer un fichier 
+
+4. ajouter une methode d'action dans le controller 
