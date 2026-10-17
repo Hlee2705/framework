@@ -14,11 +14,13 @@ import com.framework.model.UrlMethod;
 import com.google.gson.Gson;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
+@MultipartConfig 
 public class FrontControllerServlet extends HttpServlet {
 
     private Map<UrlMethod, Mapping> mappings;
