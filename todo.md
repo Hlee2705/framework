@@ -116,3 +116,76 @@ try and catch
 - remplir l'objet dans la boucle ava,t d'appeler la methode du controleur
 
 ## test : ajouter une methode qui reçoit directement un objet dans DeptController
+
+# Sprint8 : upload de fichier 
+- client -> serveur 
+- par exemple le cas d'un formulaire:
+     - misy binaire/file
+     - type de l'input : file
+     - tonga any am serveur ao anaty request : mijery raha misy type file
+          - cas données tsotra : binding
+          - cas champ formulaire misy type file 
+               - le developpeur decide : 
+                    - stocker cote serveur ou
+                    - dans une base de données 
+                    - ny ahatongavany ao am lay methode d'action le type file??
+                    - map??
+                    - misy anarana le fichier rehefa alefa avy any amin ny formulaire : tableau de bytes 
+                    - objectif : rendre ces fichiers disponibles dans les methodes d'action: controller
+                    - parametre fileMap : cle String, valeur : tableau de bytes 
+                    - ex: objet employe de raha mandray cin de bindena automatique
+                    - ex : classe Employe : nom, prenom
+                         - mandefa scan cin recto verso, dans attribut : + cin recto verso pas de type String mais un tableau de bytes 
+                              - verifier si type tableau de byte on recupere
+                         - sady misy map na ao anatin le objet
+
+                    - conclusion : creer une classe , de type an le objet le classe : 
+                         - MapFile : 
+                              - attribut : nom an le file(fileName), extension, tableau de bytes  
+                              - instancier dans le framework
+                                   ex : recto cin type file, mijery ao anatin le field an le objet ana parametre an amin le action
+                                   de mijery hoe misy type MapFile de instancier le mapFile de alefa ao 
+
+- rehefa tonga ao am le methode d'action le bytes de :
+     - soit sauvegarder dans la base de données 
+     - soit dans un fichier 
+
+- mila manana chemin hi stocker azy 
+     - tsy atao anaty request, tsy atao anaty variable
+     - atao anaty fichier properties de avy eo reecuperer dans le controller 
+
+## fonctionnement général du framework:
+- Le client envoie le formulaire contenant des champs classiques et un fichier.
+- Le FrontControllerServlet reçoit la requête.
+- Le framework identifie les paramètres de la méthode d'action.
+- Pour un objet classique comme Employe, il applique le binding existant.
+- Pour un paramètre de type MapFile, il récupère le fichier envoyé et construit un objet MapFile.
+- Le framework transmet les objets préparés à la méthode du contrôleur.
+- Le fichier peut ensuite être enregistré dans le répertoire défini dans le fichier .properties.
+
+1. Créer la classe MapFile dans model
+- avec comme attributs:
+     - nom : nom du fichier reçu
+     - extension du fichier : jpeg, pdf, ...
+     - bytes : contenu du fichier sous forme de tableau d'octets pour recuperer les données reelles du fichier 
+
+2. Modifier FrontControllerServlet pour qu'il puisse reconnaitre un objet de type MapFile et preparer l'objet à transmettre au controleur
+- recupération de l'objet envoyé par le formulaire et creation de l'objet MapFile
+- Actuellement, nous avons 3 cas: 
+     - type simple
+     - objet classique
+     - `Fichier : `
+          - ajouter les deux imports :
+          ```Java
+          import jakarta.servlet.http.Part;
+          import com.framework.model.MapFile;
+          ```
+          - La classe Part permet de recuperer le nom du fichier et son contenu
+          - Autoriser la reception des fichiers avec l'annotation @MultipartConfig
+               - Cette annotation permet au conteneur de servlets de prendre en charge les requêtes multipart et d'exposer leurs parties via request.getPart().
+          - Creer une methode pour construire `MapFile`
+               - `recupererFichier(request, nomParametre)`
+
+          - Modifier la boucle de preparation des arguments dans `ProcessResquest()`
+               - ajouter la condition pour le cas ou le parametre est un fichier
+               - la valeur est `recupererFichier(request, nomParametre)`

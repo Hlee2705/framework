@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.framework.annotation.ApiRest;
 import com.framework.annotation.RequestParam;
+import com.framework.model.MapFile;
 import com.framework.model.Mapping;
 import com.framework.model.ModelView;
 import com.framework.model.UrlMethod;
@@ -16,6 +17,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 
 public class FrontControllerServlet extends HttpServlet {
 
@@ -117,7 +119,11 @@ public class FrontControllerServlet extends HttpServlet {
 
                 Object valeurConvertie;
 
-                if(estTypeSimple(type)){
+                if(type == MapFile.class){
+                    // cas parametre fichier 
+                    valeurConvertie = recupererFichier(request, nomParametre);
+
+                } else if(estTypeSimple(type)){
 
                     // cas parametre simple
                     String valeur = request.getParameter(nomParametre);
@@ -374,6 +380,31 @@ public class FrontControllerServlet extends HttpServlet {
             // appeler le setter pour affecter la valeur
             setter.invoke(objet, valeurConvertie);
         }
+    }
+
+    private MapFile recupererFichier(HttpServletRequest request, String nomParametre) throws Exception{
+        // recuperation de la partie (Part) du fichier
+        Part partie = request.getPart(nomParametre);
+
+        // validation
+        if(partie == null || partie.getSubmittedFileName() == null || partie.getSubmittedFileName().isEmpty()){
+            return null;
+        }
+
+        String nomFichier = partie.getSubmittedFileName();
+
+        String extension = "";
+
+        int positionPoint = nomFichier.lastIndexOf('.');
+
+        if(positionPoint >= 0 && positionPoint < nomFichier.length() - 1){
+            extension = nomFichier.substring(positionPoint + 1);
+        }
+        
+        // lit le contenu du fichier dans un tableau de bytes 
+        byte[] contenu = partie.getInputStream().readAllBytes();
+
+        return new MapFile(nomFichier, extension, contenu);
     }
 
 }
