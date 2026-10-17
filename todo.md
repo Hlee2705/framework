@@ -189,3 +189,6 @@ try and catch
           - Modifier la boucle de preparation des arguments dans `ProcessResquest()`
                - ajouter la condition pour le cas ou le parametre est un fichier
                - la valeur est `recupererFichier(request, nomParametre)`
+
+3. Creer le formulaire d'upload
+- ajouter un formulaire permettant d'envoyer un fichier 
