@@ -126,7 +126,7 @@ public class DeptController {
         return e;
     }
 
-    @UrlMapping(value = "api/upload", method = "POST")
+    @UrlMapping(value = "upload", method = "POST")
     public String upload(MapFile fichier){
         return "Fichier reçu : " + fichier.getNom();
     }
