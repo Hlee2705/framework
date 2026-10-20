@@ -229,7 +229,6 @@ public class FrontControllerServlet extends HttpServlet {
 
             // ----------- Cas 2 : autre type de retour ----------
             response.setContentType("text/html;charset=UTF-8");
-
             response.getWriter().println("<h2>Méthode exécutée</h2>");
             response.getWriter().println("<p>Contrôleur : "
                     + mapping.getControllerClass().getSimpleName()
