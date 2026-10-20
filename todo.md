@@ -233,3 +233,15 @@ try and catch
      - Écrit les bytes reçus dans ce fichier.
 
 - Integrer l'enrgistrement dans la boucle binding
+
+# Sprint9 : session
+- classe Session : map string et objetc + methode utilitaire : recup varibale,..
+- utilser cette classe daans une methode d'action
+- cote framework : + bloc si type session 
+- map dans l'instance remplir avec http Session
+- apres invoke, mis a jour HttpSeesion: passage par reference
+
+fonction de type Session mandray httpSession
+
+cote devloppeur :injecter
+
