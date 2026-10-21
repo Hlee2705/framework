@@ -234,14 +234,29 @@ try and catch
 
 - Integrer l'enrgistrement dans la boucle binding
 
-# Sprint9 : session
-- classe Session : map string et objetc + methode utilitaire : recup varibale,..
-- utilser cette classe daans une methode d'action
-- cote framework : + bloc si type session 
-- map dans l'instance remplir avec http Session
-- apres invoke, mis a jour HttpSeesion: passage par reference
+# Sprint9 : gestion des sessions
+- Creer classe Session :
+     - map : String, Object 
+          - String : nom,
+          - Object : valeur
+     - methode utilitaire : 
+          - ex : pour recuperer variable, supprimer variable, recuperer variable dans session
+- Utiliser cette classe dans une methode d'action(de type Session avec comme attribut HttpSession)
+     - on peut faire des suppressions, ...
 
-fonction de type Session mandray httpSession
+- cote framework : 
+     - methode pour recuperer le nom de la variable dans la session => boucler le tableau, recuperer valeur
+     - on ne crée pas d'instance : probleme memoire à eviter
+     - au moment du traitement du parametre :
+          - ajouter un bloc: 
+               - si de type Session
+                    - creer instance -> map
+                    - map va remplir HttpSession
+                    - recuperer tous les attributs lors de l'appel
+     - apres invoke():
+          - mis a jour de HttpSession
+               - passage par reference
+               - boucle
 
-cote devloppeur :injecter
-
+- cote developpeur 
+     - injection si le parametre est de type Session
