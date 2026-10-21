@@ -260,3 +260,17 @@ try and catch
 
 - cote developpeur 
      - injection si le parametre est de type Session
+
+pas d'attribut dans FrontControllerServlet 
+pas dans init mais dans le listener 
+
+1. Creer la classe Session 
+- Methodes utilitaires:
+     - `setAttribute(String nom, Object valeur)`
+          - ajoute ou met à jour un attribut
+     - `getAttribute(String nom)`
+          - recupere la valeur d'un attribut
+     - `removeAttribute(String nom)`
+          - supprimer un attribut
+     - `contientAttribut(String nom)`
+          - verifier l'existence d'un attribut
