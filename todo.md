@@ -297,6 +297,11 @@ pas dans init mais dans le listener
           | Après la modification par le contrôleur | Rabe | Rakoto |
           | Après la synchronisation | Rabe | Rabe |
 
+3. Tester la gestion de session dans un controleur
+- ajouter une methode dans DeptController 
+     - testerSession(session)
+     
+
 # Sprint 10
 - annotation vaovao
 - verifier si authnetifier 

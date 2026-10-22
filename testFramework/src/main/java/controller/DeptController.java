@@ -7,6 +7,7 @@ import com.framework.annotation.ApiRest;
 import com.framework.annotation.UrlMapping;
 import com.framework.model.MapFile;
 import com.framework.model.ModelView;
+import com.framework.model.Session;
 
 @Controller
 public class DeptController {
@@ -131,5 +132,16 @@ public class DeptController {
         return "Nom : " + fichier.getNom()
                 + ", Extension : " + fichier.getExtension()
                 + ", Taille : " + fichier.getBytes().length + " octets";
+    }
+
+    @UrlMapping(value = "session/test", method = "GET")
+    public String testerSession(Session session){
+        // enregistrer un attribut
+        session.setAttribute("utilisateur", "Rakoto");
+
+        // recuperer cet attribut
+        Object utilisateur = session.getAttribute("utilisateur");
+
+        return "Utilisateur en session : " + utilisateur;
     }
 }

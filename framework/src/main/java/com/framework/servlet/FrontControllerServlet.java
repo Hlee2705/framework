@@ -447,7 +447,7 @@ public class FrontControllerServlet extends HttpServlet {
             }
 
             // convertir la valeur vers le type de l'attribut
-            Object valeurConvertie = convertirParametre(valeur, type, nomAttribut);
+            Object valeurConvertie = convertirParametre(valeur, typeAttribut, nomAttribut);
 
             // construire le nom du setter
             String nomSetter = "set" + Character.toUpperCase(nomAttribut.charAt(0))
