@@ -6,6 +6,9 @@ import java.util.Map;
 public class Session {
     private Map<String, Object> valeurs = new HashMap<>();
 
+    public Session() {
+    }
+
     public Session(Map<String, Object> valeurs) {
         this.valeurs = valeurs;
     }

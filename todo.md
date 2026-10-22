@@ -274,3 +274,16 @@ pas dans init mais dans le listener
           - supprimer un attribut
      - `contientAttribut(String nom)`
           - verifier l'existence d'un attribut
+
+2. Ajouter l'injection de session dans FrontControllerServlet
+- ajouter un cas pour Session
+    - `request.getSession()` récupère la session HTTP associée à la requête, ou en crée une si nécessaire. 
+    - `getAttributeNames()` permet de parcourir les noms des variables déjà stockées.
+     - Chaque variable est copiée dans notre objet Session.
+     - arguments[i] transmet cet objet à la méthode du contrôleur.
+
+- Synchroniser la session apres method.invoke()
+
+# Sprint 10
+- annotation vaovao
+- verifier si authnetifier 
