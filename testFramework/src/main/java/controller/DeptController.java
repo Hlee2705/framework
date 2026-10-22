@@ -151,4 +151,11 @@ public class DeptController {
 
         return "Utilisateur en session : " + utilisateur;
     }
+
+    @UrlMapping(value = "session/supprimer", method = "GET")
+    public String supprimerSession(Session session){
+        session.removeAttribute("utilisateur");
+
+        return "Attribut utilisateur supprimé de la session";
+    }
 }

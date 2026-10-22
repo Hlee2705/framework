@@ -306,11 +306,14 @@ pas dans init mais dans le listener
           - Après method.invoke(...), le framework synchronisera les attributs avec HttpSession.
           - La réponse affichera Utilisateur en session : Rakoto. 
 
-4. verifier la persistance de la session
-- ajouter une deuxieme dans DeptController 
-     - lireSession()
-          - recuperer la valeur deja enregistrée 
-          
+- verifier la persistance de la session
+     - ajouter une deuxieme dans DeptController 
+          - lireSession()
+               - recuperer la valeur deja enregistrée 
+- tester removeAtrribute()
+     - supprimerSession()
+     
+
 # Sprint 10
 - annotation vaovao
 - verifier si authnetifier 
