@@ -312,6 +312,9 @@ pas dans init mais dans le listener
                - recuperer la valeur deja enregistrée 
 - tester removeAtrribute()
      - supprimerSession()
+
+- tester la modification d'un attribut 
+     - modifierSession()
      
 
 # Sprint 10

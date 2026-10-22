@@ -158,4 +158,11 @@ public class DeptController {
 
         return "Attribut utilisateur supprimé de la session";
     }
+
+    @UrlMapping(value = "session/modifier", method = "GET")
+    public String modifierSession(Session session){
+        session.setAttribute("utilisateur", "Rabe");
+
+        return "utilisateur modifié : " + session.getAttribute("utilisateur");
+    }
 }
