@@ -328,6 +328,10 @@ pas dans init mais dans le listener
      - connexion() : vérifie les identifiants et enregistre l'utilisateur dans la session si la connexion réussit.
      - deconnexion() : supprime l'utilisateur de la session 
 
+5. creer le formulaire de connexion
+- creer login.html
+
+
 # Sprint 10
 - annotation vaovao
 - verifier si authnetifier 
