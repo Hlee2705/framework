@@ -144,4 +144,11 @@ public class DeptController {
 
         return "Utilisateur en session : " + utilisateur;
     }
+
+    @UrlMapping(value = "session/lire", method = "GET")
+    public String lireSession(Session session){
+        Object utilisateur = session.getAttribute("utilisateur");
+
+        return "Utilisateur en session : " + utilisateur;
+    }
 }

@@ -300,8 +300,17 @@ pas dans init mais dans le listener
 3. Tester la gestion de session dans un controleur
 - ajouter une methode dans DeptController 
      - testerSession(session)
-     
+          - Le framework récupérera la session HTTP.
+          - Il copiera ses attributs dans l'objet Session.
+          - La méthode ajoutera l'attribut utilisateur.
+          - Après method.invoke(...), le framework synchronisera les attributs avec HttpSession.
+          - La réponse affichera Utilisateur en session : Rakoto. 
 
+4. verifier la persistance de la session
+- ajouter une deuxieme dans DeptController 
+     - lireSession()
+          - recuperer la valeur deja enregistrée 
+          
 # Sprint 10
 - annotation vaovao
 - verifier si authnetifier 
