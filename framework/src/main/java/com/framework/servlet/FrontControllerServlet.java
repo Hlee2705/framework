@@ -104,11 +104,16 @@ public class FrontControllerServlet extends HttpServlet {
         Mapping mapping = mappings.get(key);
 
         if (mapping == null) {
+            var dispatcher = request.getServletContext()
+                    .getNamedDispatcher("default");
+
+            if (dispatcher != null) {
+                dispatcher.forward(request, response);
+                return;
+            }
+
             throw new ServletException(
-                    "Aucun mapping trouvé pour "
-                            + httpMethod
-                            + " "
-                            + url);
+                    "Le servlet par défaut de Tomcat est introuvable.");
         }
 
         try {
@@ -209,29 +214,28 @@ public class FrontControllerServlet extends HttpServlet {
             Object result = method.invoke(controller, arguments);
 
             // cas session
-            if(sessionUtilisee != null){
+            if (sessionUtilisee != null) {
                 // rechercher les attributs à supprimer
                 List<String> nomsASupprimer = new ArrayList<>();
 
                 // parcourt tous les attributs actuellement enregistrés dans la session Http
                 Enumeration<String> noms = httpSession.getAttributeNames();
 
-                while(noms.hasMoreElements()){
+                while (noms.hasMoreElements()) {
                     String nom = noms.nextElement();
 
-                    if(!sessionUtilisee.getValeurs().containsKey(nom)){
+                    if (!sessionUtilisee.getValeurs().containsKey(nom)) {
                         nomsASupprimer.add(nom);
                     }
                 }
 
                 // supprimer les attributs retirés dans session
-                for(String nom : nomsASupprimer){
+                for (String nom : nomsASupprimer) {
                     httpSession.removeAttribute(nom);
                 }
 
                 // ajouter ou mettre a jour les attributs
-                for (Map.Entry<String, Object> entree : 
-                    sessionUtilisee.getValeurs().entrySet()){
+                for (Map.Entry<String, Object> entree : sessionUtilisee.getValeurs().entrySet()) {
                     httpSession.setAttribute(entree.getKey(), entree.getValue());
                 }
             }
