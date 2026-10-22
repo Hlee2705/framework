@@ -283,6 +283,19 @@ pas dans init mais dans le listener
      - arguments[i] transmet cet objet à la méthode du contrôleur.
 
 - Synchroniser la session apres method.invoke()
+     - conserver les modifiactions que le controleur effectue sur la session
+     - le probleme : 
+          - le framework recupere la session Http
+          - le framework copie cette donnée dans notre objet Session
+          - le controleur modifie notre objet session
+     - solution : 
+          - Après l'exécution du contrôleur, le framework doit recopier les données de notre objet Session dans HttpSession.
+
+          | Moment | `Session` | `HttpSession` |
+          |---|---|---|
+          | Avant l'exécution | Rakoto | Rakoto |
+          | Après la modification par le contrôleur | Rabe | Rakoto |
+          | Après la synchronisation | Rabe | Rabe |
 
 # Sprint 10
 - annotation vaovao

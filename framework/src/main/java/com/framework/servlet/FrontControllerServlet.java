@@ -213,6 +213,7 @@ public class FrontControllerServlet extends HttpServlet {
                 // rechercher les attributs à supprimer
                 List<String> nomsASupprimer = new ArrayList<>();
 
+                // parcourt tous les attributs actuellement enregistrés dans la session Http
                 Enumeration<String> noms = httpSession.getAttributeNames();
 
                 while(noms.hasMoreElements()){
