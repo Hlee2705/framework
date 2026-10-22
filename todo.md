@@ -323,6 +323,11 @@ pas dans init mais dans le listener
 - Combiner Session et RequestParam
      - connexion(request param, session)
 
+4. Ecrire le controleur d'authentification : LoginController
+- creer deux methodes : 
+     - connexion() : vérifie les identifiants et enregistre l'utilisateur dans la session si la connexion réussit.
+     - deconnexion() : supprime l'utilisateur de la session 
+
 # Sprint 10
 - annotation vaovao
 - verifier si authnetifier 
