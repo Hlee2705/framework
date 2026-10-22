@@ -308,13 +308,17 @@ pas dans init mais dans le listener
 
 - verifier la persistance de la session
      - ajouter une deuxieme dans DeptController 
-          - lireSession()
+          - lireSession(session)
                - recuperer la valeur deja enregistrée 
 - tester removeAtrribute()
-     - supprimerSession()
+     - supprimerSession(session)
 
 - tester la modification d'un attribut 
-     - modifierSession()
+     - modifierSession(session)
+
+
+- verifier la conservation de la session sans parametre Session
+     - sansSession()
      
 
 # Sprint 10

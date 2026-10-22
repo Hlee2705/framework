@@ -135,7 +135,7 @@ public class DeptController {
     }
 
     @UrlMapping(value = "session/test", method = "GET")
-    public String testerSession(Session session){
+    public String testerSession(Session session) {
         // enregistrer un attribut
         session.setAttribute("utilisateur", "Rakoto");
 
@@ -146,23 +146,28 @@ public class DeptController {
     }
 
     @UrlMapping(value = "session/lire", method = "GET")
-    public String lireSession(Session session){
+    public String lireSession(Session session) {
         Object utilisateur = session.getAttribute("utilisateur");
 
         return "Utilisateur en session : " + utilisateur;
     }
 
     @UrlMapping(value = "session/supprimer", method = "GET")
-    public String supprimerSession(Session session){
+    public String supprimerSession(Session session) {
         session.removeAttribute("utilisateur");
 
         return "Attribut utilisateur supprimé de la session";
     }
 
     @UrlMapping(value = "session/modifier", method = "GET")
-    public String modifierSession(Session session){
+    public String modifierSession(Session session) {
         session.setAttribute("utilisateur", "Rabe");
 
         return "utilisateur modifié : " + session.getAttribute("utilisateur");
+    }
+
+    @UrlMapping(value = "session/sans-session", method = "GET")
+    public String sansSession() {
+        return "Cette méthode ne reçoit pas de paramètre Session.";
     }
 }
