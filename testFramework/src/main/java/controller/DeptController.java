@@ -170,4 +170,15 @@ public class DeptController {
     public String sansSession() {
         return "Cette méthode ne reçoit pas de paramètre Session.";
     }
+
+    @UrlMapping(value = "session/connexion", method = "GET")
+    public String connexion(
+            @RequestParam("nom") String nomUtilisateur,
+            Session session) {
+
+        session.setAttribute("utilisateur", nomUtilisateur);
+
+        return "Utilisateur connecté : "
+                + session.getAttribute("utilisateur");
+    }
 }

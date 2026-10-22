@@ -319,7 +319,9 @@ pas dans init mais dans le listener
 
 - verifier la conservation de la session sans parametre Session
      - sansSession()
-     
+
+- Combiner Session et RequestParam
+     - connexion(request param, session)
 
 # Sprint 10
 - annotation vaovao
