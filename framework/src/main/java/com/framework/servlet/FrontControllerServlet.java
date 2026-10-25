@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -14,6 +17,7 @@ import com.framework.annotation.RequestParam;
 import com.framework.model.MapFile;
 import com.framework.model.Mapping;
 import com.framework.model.ModelView;
+import com.framework.model.Session;
 import com.framework.model.UrlMethod;
 import com.google.gson.Gson;
 
@@ -22,6 +26,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 
 @MultipartConfig
@@ -99,11 +104,16 @@ public class FrontControllerServlet extends HttpServlet {
         Mapping mapping = mappings.get(key);
 
         if (mapping == null) {
+            var dispatcher = request.getServletContext()
+                    .getNamedDispatcher("default");
+
+            if (dispatcher != null) {
+                dispatcher.forward(request, response);
+                return;
+            }
+
             throw new ServletException(
-                    "Aucun mapping trouvé pour "
-                            + httpMethod
-                            + " "
-                            + url);
+                    "Le servlet par défaut de Tomcat est introuvable.");
         }
 
         try {
@@ -121,6 +131,9 @@ public class FrontControllerServlet extends HttpServlet {
 
             Object[] arguments = new Object[parameters.length];
 
+            Session sessionUtilisee = null;
+            HttpSession httpSession = null;
+
             for (int i = 0; i < parameters.length; i++) {
 
                 java.lang.reflect.Parameter parameter = parameters[i];
@@ -136,11 +149,26 @@ public class FrontControllerServlet extends HttpServlet {
 
                 Object valeurConvertie;
 
-                if (type == MapFile.class) {
+                if (type == Session.class) {
+                    httpSession = request.getSession();
+                    sessionUtilisee = new Session();
+
+                    Enumeration<String> noms = httpSession.getAttributeNames();
+
+                    while (noms.hasMoreElements()) {
+                        String nom = noms.nextElement();
+                        Object valeur = httpSession.getAttribute(nom);
+
+                        sessionUtilisee.setAttribute(nom, valeur);
+                    }
+
+                    arguments[i] = sessionUtilisee;
+
+                } else if (type == MapFile.class) {
                     // cas parametre fichier
                     MapFile fichier = recupererFichier(request, nomParametre);
 
-                    if(fichier != null){
+                    if (fichier != null) {
                         String chemin = enregistrerFichier(fichier);
 
                         System.out.println("Fichier enregistré : " + chemin);
@@ -148,6 +176,7 @@ public class FrontControllerServlet extends HttpServlet {
                     }
 
                     valeurConvertie = fichier;
+                    arguments[i] = valeurConvertie;
 
                 } else if (estTypeSimple(type)) {
 
@@ -155,6 +184,7 @@ public class FrontControllerServlet extends HttpServlet {
                     String valeur = request.getParameter(nomParametre);
 
                     valeurConvertie = convertirParametre(valeur, type, nomParametre);
+                    arguments[i] = valeurConvertie;
 
                 } else {
 
@@ -169,9 +199,10 @@ public class FrontControllerServlet extends HttpServlet {
                     remplirObjet(valeurConvertie, request);
 
                     System.out.println("Objet cree : " + valeurConvertie);
-                }
 
-                arguments[i] = valeurConvertie;
+                    arguments[i] = valeurConvertie;
+
+                }
 
                 // System.out.println("Parametre : " + nomParametre);
                 // System.out.println("Type : " + type.getSimpleName());
@@ -181,6 +212,33 @@ public class FrontControllerServlet extends HttpServlet {
 
             // Exécution
             Object result = method.invoke(controller, arguments);
+
+            // cas session
+            if (sessionUtilisee != null) {
+                // rechercher les attributs à supprimer
+                List<String> nomsASupprimer = new ArrayList<>();
+
+                // parcourt tous les attributs actuellement enregistrés dans la session Http
+                Enumeration<String> noms = httpSession.getAttributeNames();
+
+                while (noms.hasMoreElements()) {
+                    String nom = noms.nextElement();
+
+                    if (!sessionUtilisee.getValeurs().containsKey(nom)) {
+                        nomsASupprimer.add(nom);
+                    }
+                }
+
+                // supprimer les attributs retirés dans session
+                for (String nom : nomsASupprimer) {
+                    httpSession.removeAttribute(nom);
+                }
+
+                // ajouter ou mettre a jour les attributs
+                for (Map.Entry<String, Object> entree : sessionUtilisee.getValeurs().entrySet()) {
+                    httpSession.setAttribute(entree.getKey(), entree.getValue());
+                }
+            }
 
             // Cas 1 : API REST
             if (method.isAnnotationPresent(ApiRest.class)) {
@@ -393,7 +451,7 @@ public class FrontControllerServlet extends HttpServlet {
             }
 
             // convertir la valeur vers le type de l'attribut
-            Object valeurConvertie = convertirParametre(valeur, type, nomAttribut);
+            Object valeurConvertie = convertirParametre(valeur, typeAttribut, nomAttribut);
 
             // construire le nom du setter
             String nomSetter = "set" + Character.toUpperCase(nomAttribut.charAt(0))
@@ -450,18 +508,18 @@ public class FrontControllerServlet extends HttpServlet {
             }
         }
     }
-    
-    private String enregistrerFichier(MapFile fichier) throws IOException{
+
+    private String enregistrerFichier(MapFile fichier) throws IOException {
         // verifier si le fichier est bien reçu
-        if(fichier == null || fichier.getBytes() == null){
+        if (fichier == null || fichier.getBytes() == null) {
             throw new IOException("Aucun fichier reçu.");
         }
 
         // recuperer le repertoire configuré
         File repertoire = new File(uploadDirectory);
 
-        // creer le repertoire s'il n'existe pas 
-        if(!repertoire.exists()){
+        // creer le repertoire s'il n'existe pas
+        if (!repertoire.exists()) {
             repertoire.mkdirs();
         }
 
@@ -469,7 +527,7 @@ public class FrontControllerServlet extends HttpServlet {
         File destination = new File(repertoire, fichier.getNom());
 
         // ecrire le contenu du fichier sur le disque
-        try(FileOutputStream output = new FileOutputStream(destination)){
+        try (FileOutputStream output = new FileOutputStream(destination)) {
             output.write(fichier.getBytes());
         }
 

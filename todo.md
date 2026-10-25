@@ -234,14 +234,104 @@ try and catch
 
 - Integrer l'enrgistrement dans la boucle binding
 
-# Sprint9 : session
-- classe Session : map string et objetc + methode utilitaire : recup varibale,..
-- utilser cette classe daans une methode d'action
-- cote framework : + bloc si type session 
-- map dans l'instance remplir avec http Session
-- apres invoke, mis a jour HttpSeesion: passage par reference
+# Sprint9 : gestion des sessions
+- Creer classe Session :
+     - map : String, Object 
+          - String : nom,
+          - Object : valeur
+     - methode utilitaire : 
+          - ex : pour recuperer variable, supprimer variable, recuperer variable dans session
+- Utiliser cette classe dans une methode d'action(de type Session avec comme attribut HttpSession)
+     - on peut faire des suppressions, ...
 
-fonction de type Session mandray httpSession
+- cote framework : 
+     - methode pour recuperer le nom de la variable dans la session => boucler le tableau, recuperer valeur
+     - on ne crée pas d'instance : probleme memoire à eviter
+     - au moment du traitement du parametre :
+          - ajouter un bloc: 
+               - si de type Session
+                    - creer instance -> map
+                    - map va remplir HttpSession
+                    - recuperer tous les attributs lors de l'appel
+     - apres invoke():
+          - mis a jour de HttpSession
+               - passage par reference
+               - boucle
 
-cote devloppeur :injecter
+- cote developpeur 
+     - injection si le parametre est de type Session
 
+pas d'attribut dans FrontControllerServlet 
+pas dans init mais dans le listener 
+
+1. Creer la classe Session 
+- Methodes utilitaires:
+     - `setAttribute(String nom, Object valeur)`
+          - ajoute ou met à jour un attribut
+     - `getAttribute(String nom)`
+          - recupere la valeur d'un attribut
+     - `removeAttribute(String nom)`
+          - supprimer un attribut
+     - `contientAttribut(String nom)`
+          - verifier l'existence d'un attribut
+
+2. Ajouter l'injection de session dans FrontControllerServlet
+- ajouter un cas pour Session
+    - `request.getSession()` récupère la session HTTP associée à la requête, ou en crée une si nécessaire. 
+    - `getAttributeNames()` permet de parcourir les noms des variables déjà stockées.
+     - Chaque variable est copiée dans notre objet Session.
+     - arguments[i] transmet cet objet à la méthode du contrôleur.
+
+- Synchroniser la session apres method.invoke()
+     - conserver les modifiactions que le controleur effectue sur la session
+     - le probleme : 
+          - le framework recupere la session Http
+          - le framework copie cette donnée dans notre objet Session
+          - le controleur modifie notre objet session
+     - solution : 
+          - Après l'exécution du contrôleur, le framework doit recopier les données de notre objet Session dans HttpSession.
+
+          | Moment | `Session` | `HttpSession` |
+          |---|---|---|
+          | Avant l'exécution | Rakoto | Rakoto |
+          | Après la modification par le contrôleur | Rabe | Rakoto |
+          | Après la synchronisation | Rabe | Rabe |
+
+3. Tester la gestion de session dans un controleur
+- ajouter une methode dans DeptController 
+     - testerSession(session)
+          - Le framework récupérera la session HTTP.
+          - Il copiera ses attributs dans l'objet Session.
+          - La méthode ajoutera l'attribut utilisateur.
+          - Après method.invoke(...), le framework synchronisera les attributs avec HttpSession.
+          - La réponse affichera Utilisateur en session : Rakoto. 
+
+- verifier la persistance de la session
+     - ajouter une deuxieme dans DeptController 
+          - lireSession(session)
+               - recuperer la valeur deja enregistrée 
+- tester removeAtrribute()
+     - supprimerSession(session)
+
+- tester la modification d'un attribut 
+     - modifierSession(session)
+
+
+- verifier la conservation de la session sans parametre Session
+     - sansSession()
+
+- Combiner Session et RequestParam
+     - connexion(request param, session)
+
+4. Ecrire le controleur d'authentification : LoginController
+- creer deux methodes : 
+     - connexion() : vérifie les identifiants et enregistre l'utilisateur dans la session si la connexion réussit.
+     - deconnexion() : supprime l'utilisateur de la session 
+
+5. creer le formulaire de connexion
+- creer login.html
+
+
+# Sprint 10
+- annotation vaovao
+- verifier si authnetifier 

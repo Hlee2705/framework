@@ -1,6 +1,7 @@
 com/framework/servlet/FrontControllerServlet.class
 com/framework/servlet/FrontControllerServlet$ParametreInvalideException.class
 com/framework/listener/RequestContextListener.class
+com/framework/model/Session.class
 com/framework/annotation/UrlMapping.class
 com/framework/model/UrlMethod.class
 com/framework/model/MapFile.class
