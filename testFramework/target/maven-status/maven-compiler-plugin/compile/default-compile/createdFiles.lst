@@ -7,4 +7,5 @@ controller/LoginController.class
 controller/A.class
 valisoa/Avion.class
 controller/Employe.class
+model/Utilisateur.class
 controller/B.class
