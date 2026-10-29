@@ -49,6 +49,10 @@ public class FrontControllerServlet extends HttpServlet {
 
         mappings = (Map<UrlMethod, Mapping>) getServletContext().getAttribute("globalMappings");
 
+        String sessionAuthAttribute = getServletConfig().getInitParameter("sessionAuthAttribute");
+
+        getServletContext().setAttribute("sessionAuthAttribute", sessionAuthAttribute);
+
         if (mappings == null) {
             throw new ServletException(
                     "Le Listener n'a pas chargé les mappings.");
