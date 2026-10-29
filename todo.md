@@ -373,6 +373,11 @@ pas dans init mais dans le listener
 - Recuperer le parametre de configuration
 - stocker la valeur dans le servletContext 
 
+4. reperer l'endroit ou ajouter la verification
+- dans ProcessRequest():
+     - repérer l'endroit où on appelle la méthode du contrôleur avec la réflexion Java
+     - ajouter la verification de l'authentification
+     
 
 # Sprint 10 bis 
 ## Quoi ?
