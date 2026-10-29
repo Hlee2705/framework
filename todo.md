@@ -364,7 +364,9 @@ pas dans init mais dans le listener
                - ex : isOut
 
 1. Créer l'annotation @Auth
-
+2. Configurer web.xml
+- ajouter dans la declaration de FrontController le parametre sessionAttribute 
+- Le paramètre sessionAuthAttribute indique donc au framework de vérifier l'existence de l'attribut de session utilisateur.
 
 # Sprint 10 bis 
 ## Quoi ?
