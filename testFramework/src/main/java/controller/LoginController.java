@@ -49,9 +49,14 @@ public class LoginController {
         return "Deconnexion reussie.";
     }
 
-    @Auth 
+    @Auth
     @UrlMapping(value = "profil", method = "GET")
-    public String afficherProfil(Session session){
+    public String afficherProfil(Session session) {
         return "Bienvenue sur votre profil";
+    }
+
+    @UrlMapping(value = "accueil", method = "GET")
+    public String afficherAccueil() {
+        return "Bienvenue sur la page d'accueil !";
     }
 }
