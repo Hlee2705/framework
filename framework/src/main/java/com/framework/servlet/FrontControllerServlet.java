@@ -54,6 +54,11 @@ public class FrontControllerServlet extends HttpServlet {
 
         getServletContext().setAttribute("sessionAuthAttribute", sessionAuthAttribute);
 
+        // recuperer le nom de l'attribut des roles
+        String sessionRolesAttribute = getServletConfig().getInitParameter("sessionRolesAttribute");
+
+        getServletContext().setAttribute("sessionRolesAttribute", sessionRolesAttribute);
+
         if (mappings == null) {
             throw new ServletException(
                     "Le Listener n'a pas chargé les mappings.");
@@ -128,25 +133,28 @@ public class FrontControllerServlet extends HttpServlet {
                     .getDeclaredConstructor()
                     .newInstance();
 
-            // Méthode à appeler
             Method method = mapping.getMethod();
 
-            // verifier si la methode necessite une authentification
-            if (method.isAnnotationPresent(Auth.class)) {
-                // recuperer le nom de l'attribut de session configuré
-                String nomAttributAuth = (String) getServletContext().getAttribute("sessionAuthAttribute");
+            // Méthode à appeler
+            Auth auth = method.getAnnotation(Auth.class);
 
-                // verifier que la configuration existe
+            if (auth != null) {
+
+                // 1. Recuperer le nom de l'attribut d'authentification
+                String nomAttributAuth = (String) getServletContext()
+                        .getAttribute("sessionAuthAttribute");
+
                 if (nomAttributAuth == null || nomAttributAuth.isEmpty()) {
                     throw new ServletException(
                             "Le nom de l'attribut d'authentification n'est pas configuré.");
                 }
 
-                // Recuperer la session existante sans en creer une nouvelle
+                // 2. Recuperer la session existante
                 HttpSession sessionsExistante = request.getSession(false);
 
-                // verifier si l'utilisateur est authentifié
-                if (sessionsExistante == null || sessionsExistante.getAttribute(nomAttributAuth) == null) {
+                // 3. Verifier si l'utilisateur est authentifié
+                if (sessionsExistante == null
+                        || sessionsExistante.getAttribute(nomAttributAuth) == null) {
 
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType("text/plain;charset=UTF-8");
@@ -155,6 +163,65 @@ public class FrontControllerServlet extends HttpServlet {
                             "Accès refusé : vous devez être authentifié.");
 
                     return;
+                }
+
+                // 4. Recuperer les roles autorisés depuis l'annotation
+                String[] rolesAutorises = auth.roles();
+
+                // 5. Verifier si des roles sont exigés
+                if (rolesAutorises.length > 0) {
+
+                    String nomAttributRoles = (String) getServletContext()
+                            .getAttribute("sessionRolesAttribute");
+
+                    if (nomAttributRoles == null || nomAttributRoles.isEmpty()) {
+                        throw new ServletException(
+                                "Le nom de l'attribut des roles n'est pas configuré.");
+                    }
+
+                    // Recuperer les roles de l'utilisateur
+                    Object rolesUtilisateur = sessionsExistante.getAttribute(nomAttributRoles);
+
+                    // Verifier si les roles de l'utilisateur existent
+                    if (rolesUtilisateur == null || !(rolesUtilisateur instanceof String[])) {
+
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.setContentType("text/plain;charset=UTF-8");
+
+                        response.getWriter().println(
+                                "Accès refusé : aucun rôle valide n'est associé à votre compte.");
+
+                        return;
+                    }
+
+                    // Convertir les roles en tableau de String
+                    String[] rolesUtilisateurArray = (String[]) rolesUtilisateur;
+
+                    // verfier si l'utilisateur possede au moins un role autorisé
+                    boolean roleAutorise = false;
+
+                    for (String roleAutoriseActuel : rolesAutorises) {
+                        for (String roleUtilisateur : rolesUtilisateurArray) {
+                            if (roleAutoriseActuel.equals(roleUtilisateur)) {
+                                roleAutorise = true;
+                                break;
+                            }
+                        }
+                        if (roleAutorise) {
+                            break;
+                        }
+                    }
+
+                    // refuser l'acces si aucun role ne correspond
+                    if (!roleAutorise) {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.setContentType("text/plain;charset=UTF-8");
+
+                        response.getWriter().println(
+                                "Accès refusé : vous ne possédez pas le rôle nécessaire.");
+
+                        return;
+                    }
                 }
             }
 

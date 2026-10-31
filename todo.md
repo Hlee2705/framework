@@ -417,3 +417,25 @@ pas dans init mais dans le listener
                     - si oui : 
                          - recuperer et comparer par rapport à la valeur annotation 
                          - si existe : executer  
+
+1. Faire evoluer l'annotation @Auth
+- ajouter un attribut roles de type tableau de chaines de caracteres
+
+2. Configurer le nom de l'attibut qui contient les roles 
+- dans web.xml de test, ajouter un deuxième init-param contenant le nom de l'attribut 
+
+3. Récupérer le nom de l'attribut des rôles dans FrontControllerServlet.init()
+
+4. Recuperer les roles autorises depuis @Auth  
+- dans processRequest()
+     - recuperer l'annotation @Auth
+     - recuperer les roles autorises auth.roles()
+     - si le tableau est vide, verifier uniquement l'authentification
+     - s'il contient des roles, recuperer les roles de l'utilisateur dans la session et verifier qu'il en possede au moins un
+
+5. Test d'uathentification avec les roles
+- preparer les roles dans LoginController
+- creer une methode reservee au role de test
+
+
+
