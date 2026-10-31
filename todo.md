@@ -426,4 +426,11 @@ pas dans init mais dans le listener
 
 3. Récupérer le nom de l'attribut des rôles dans FrontControllerServlet.init()
 
+4. Recuperer les roles autorises depuis @Auth  
+- dans processRequest()
+     - recuperer l'annotation @Auth
+     - recuperer les roles autorises auth.roles()
+     - si le tableau est vide, verifier uniquement l'authentification
+     - s'il contient des roles, recuperer les roles de l'utilisateur dans la session et verifier qu'il en possede au moins un
+
 
