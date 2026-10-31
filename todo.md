@@ -417,3 +417,7 @@ pas dans init mais dans le listener
                     - si oui : 
                          - recuperer et comparer par rapport à la valeur annotation 
                          - si existe : executer  
+
+1. Faire evoluer l'annotation @Auth
+- ajouter un attribut roles de type tableau de chaines de caracteres
+
