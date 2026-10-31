@@ -433,4 +433,9 @@ pas dans init mais dans le listener
      - si le tableau est vide, verifier uniquement l'authentification
      - s'il contient des roles, recuperer les roles de l'utilisateur dans la session et verifier qu'il en possede au moins un
 
+5. Test d'uathentification avec les roles
+- preparer les roles dans LoginController
+- creer une methode reservee au role de test
+
+
 

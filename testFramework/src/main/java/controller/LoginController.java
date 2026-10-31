@@ -33,6 +33,8 @@ public class LoginController {
                     && utilisateur.getMotDePasse().equals(motDePasse)) {
 
                 session.setAttribute("utilisateur", nomUtilisateur);
+                session.setAttribute("roles", new String[] { "UTILISATEUR" });
+                session.setAttribute("roles", new String[]{"DIRECTEUR"});
 
                 return "Connexion reussie. Bienvenue " + nomUtilisateur;
             }
@@ -58,5 +60,17 @@ public class LoginController {
     @UrlMapping(value = "accueil", method = "GET")
     public String afficherAccueil() {
         return "Bienvenue sur la page d'accueil !";
+    }
+
+    @Auth(roles = { "ADMIN" })
+    @UrlMapping(value = "administration", method = "GET")
+    public String administration() {
+        return "Bienvenue dans l'administration !";
+    }
+
+    @Auth(roles = { "ADMIN", "DIRECTEUR" })
+    @UrlMapping(value = "direction", method = "GET")
+    public String direction() {
+        return "Bienvenue dans l'espace de direction !";
     }
 }
