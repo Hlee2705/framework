@@ -11,6 +11,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.framework.annotation.ApiRest;
 import com.framework.annotation.Auth;
@@ -44,6 +45,8 @@ public class FrontControllerServlet extends HttpServlet {
     // Préfixe et suffixe des vues
     private static final String PREFIX = "/WEB-INF/views/";
     private static final String SUFFIX = ".jsp";
+
+    private Map<Class<?>, Object> controleurs = new ConcurrentHashMap<>();
 
     @Override
     public void init() throws ServletException {
@@ -128,10 +131,23 @@ public class FrontControllerServlet extends HttpServlet {
 
         try {
 
-            // Création du contrôleur
-            Object controller = mapping.getControllerClass()
-                    .getDeclaredConstructor()
-                    .newInstance();
+            // Récupérer la classe du contrôleur
+            Class<?> controllerClass = mapping.getControllerClass();
+
+            // Récupérer l'instance existante ou en créer une nouvelle
+            Object controller = controleurs.computeIfAbsent(controllerClass, classe -> {
+                try {
+                    return classe.getDeclaredConstructor().newInstance();
+                } catch (Exception e) {
+                    throw new RuntimeException("Erreur lors de la création du contrôleur : "
+                            + classe.getName(), e);
+                }
+            });
+
+            // Vérifier l'identité de l'instance du contrôleur
+            System.out.println(
+                    "Contrôleur : " + controllerClass.getSimpleName()
+                            + " | Instance : " + System.identityHashCode(controller));
 
             Method method = mapping.getMethod();
 
