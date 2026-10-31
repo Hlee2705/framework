@@ -424,3 +424,6 @@ pas dans init mais dans le listener
 2. Configurer le nom de l'attibut qui contient les roles 
 - dans web.xml de test, ajouter un deuxième init-param contenant le nom de l'attribut 
 
+3. Récupérer le nom de l'attribut des rôles dans FrontControllerServlet.init()
+
+

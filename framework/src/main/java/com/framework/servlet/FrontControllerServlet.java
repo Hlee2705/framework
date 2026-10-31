@@ -54,6 +54,11 @@ public class FrontControllerServlet extends HttpServlet {
 
         getServletContext().setAttribute("sessionAuthAttribute", sessionAuthAttribute);
 
+        // recuperer le nom de l'attribut des roles 
+        String sessionRolesAttribute = getServletConfig().getInitParameter("sessionRolesAttribute");
+
+        getServletContext().setAttribute("sessionRolesAttribute", sessionRolesAttribute);
+
         if (mappings == null) {
             throw new ServletException(
                     "Le Listener n'a pas chargé les mappings.");
