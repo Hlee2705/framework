@@ -437,5 +437,22 @@ pas dans init mais dans le listener
 - preparer les roles dans LoginController
 - creer une methode reservee au role de test
 
-
-
+# Sprint 11 : singleton
+- controleur cote developpeur : 
+     - ce qui ne marche pas : quand on veut acceder à une url qui est associée à une methode dans un controleur cote developpeur , on instancie le controleur
+     - donc : 
+          - il doit avoir le meme comportement que le servlet
+          - une instance se fait une fois pour un controleur et repond à toutes les requetes => singleton
+          - bout de code qui fait l'instanciation
+               - verifier si l'instance existe => instancier 
+               - si non : on le met qualque part
+          - clé : nom du controleur 
+          - valeur : l'instance
+          - si il existe : 
+               - recuperer l'instance: qui va repondre les requetes
+          - si non :
+               - createInstance
+          - 1 instance pour chaque controleur 
+               - consequence : pas de session start 
+               - ne peut mettre d'attibut dans un controleur 
+               - parametre des methodes d'action

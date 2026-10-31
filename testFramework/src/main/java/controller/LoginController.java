@@ -14,7 +14,7 @@ import com.framework.model.Session;
 @Controller
 public class LoginController {
 
-    private List<Utilisateur> utilisateurs = new ArrayList<>();
+    private final List<Utilisateur> utilisateurs = new ArrayList<>();
 
     public LoginController() {
         utilisateurs.add(new Utilisateur("admin", "1234"));
