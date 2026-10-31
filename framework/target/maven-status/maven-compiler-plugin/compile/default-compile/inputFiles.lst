@@ -1,5 +1,6 @@
 /home/valisoa/Documents/framework/framework/src/main/java/com/framework/App.java
 /home/valisoa/Documents/framework/framework/src/main/java/com/framework/annotation/ApiRest.java
+/home/valisoa/Documents/framework/framework/src/main/java/com/framework/annotation/Auth.java
 /home/valisoa/Documents/framework/framework/src/main/java/com/framework/annotation/JsonSerializable.java
 /home/valisoa/Documents/framework/framework/src/main/java/com/framework/annotation/RequestParam.java
 /home/valisoa/Documents/framework/framework/src/main/java/com/framework/annotation/UrlMapping.java

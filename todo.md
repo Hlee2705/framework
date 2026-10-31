@@ -378,6 +378,9 @@ pas dans init mais dans le listener
      - repérer l'endroit où on appelle la méthode du contrôleur avec la réflexion Java
      - ajouter la verification de l'authentification
      
+5. Creer une methode protegee 
+     - dans LoginController : afficherProfil(session)
+         
 
 # Sprint 10 bis 
 ## Quoi ?
