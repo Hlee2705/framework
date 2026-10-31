@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.framework.annotation.ApiRest;
+import com.framework.annotation.Auth;
 import com.framework.annotation.RequestParam;
 import com.framework.model.MapFile;
 import com.framework.model.Mapping;
@@ -48,6 +49,10 @@ public class FrontControllerServlet extends HttpServlet {
     public void init() throws ServletException {
 
         mappings = (Map<UrlMethod, Mapping>) getServletContext().getAttribute("globalMappings");
+
+        String sessionAuthAttribute = getServletConfig().getInitParameter("sessionAuthAttribute");
+
+        getServletContext().setAttribute("sessionAuthAttribute", sessionAuthAttribute);
 
         if (mappings == null) {
             throw new ServletException(
@@ -125,6 +130,33 @@ public class FrontControllerServlet extends HttpServlet {
 
             // Méthode à appeler
             Method method = mapping.getMethod();
+
+            // verifier si la methode necessite une authentification
+            if (method.isAnnotationPresent(Auth.class)) {
+                // recuperer le nom de l'attribut de session configuré
+                String nomAttributAuth = (String) getServletContext().getAttribute("sessionAuthAttribute");
+
+                // verifier que la configuration existe
+                if (nomAttributAuth == null || nomAttributAuth.isEmpty()) {
+                    throw new ServletException(
+                            "Le nom de l'attribut d'authentification n'est pas configuré.");
+                }
+
+                // Recuperer la session existante sans en creer une nouvelle
+                HttpSession sessionsExistante = request.getSession(false);
+
+                // verifier si l'utilisateur est authentifié
+                if (sessionsExistante == null || sessionsExistante.getAttribute(nomAttributAuth) == null) {
+
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("text/plain;charset=UTF-8");
+
+                    response.getWriter().println(
+                            "Accès refusé : vous devez être authentifié.");
+
+                    return;
+                }
+            }
 
             // Récupération des paramètres
             java.lang.reflect.Parameter[] parameters = method.getParameters();

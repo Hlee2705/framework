@@ -6,6 +6,7 @@ import java.util.List;
 import model.Utilisateur;
 import org.springframework.stereotype.Controller;
 
+import com.framework.annotation.Auth;
 import com.framework.annotation.RequestParam;
 import com.framework.annotation.UrlMapping;
 import com.framework.model.Session;
@@ -46,5 +47,16 @@ public class LoginController {
         session.removeAttribute("utilisateur");
 
         return "Deconnexion reussie.";
+    }
+
+    @Auth
+    @UrlMapping(value = "profil", method = "GET")
+    public String afficherProfil(Session session) {
+        return "Bienvenue sur votre profil";
+    }
+
+    @UrlMapping(value = "accueil", method = "GET")
+    public String afficherAccueil() {
+        return "Bienvenue sur la page d'accueil !";
     }
 }

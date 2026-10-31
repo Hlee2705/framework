@@ -7,6 +7,7 @@ com/framework/model/UrlMethod.class
 com/framework/model/MapFile.class
 com/framework/annotation/ApiRest.class
 com/framework/App.class
+com/framework/annotation/Auth.class
 com/framework/model/ModelView.class
 com/framework/annotation/RequestParam.class
 com/framework/util/ParamScanUtil.class

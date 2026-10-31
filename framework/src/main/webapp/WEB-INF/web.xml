@@ -18,6 +18,13 @@
             mg.framework.servlet.FrontControllerServlet
         </servlet-class>
 
+        <init-param>
+        <param-name>sessionAuthAttribute</param-name>
+        <param-value>utilisateur</param-value>
+
+        <load-on-startup>1</load-on-startup>
+    </init-param>
+
     </servlet>
 
     <servlet-mapping>

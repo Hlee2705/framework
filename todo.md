@@ -333,5 +333,87 @@ pas dans init mais dans le listener
 
 
 # Sprint 10
-- annotation vaovao
-- verifier si authnetifier 
+## Quoi
+- on a des methodes d'action dans le controleur associé à des url
+- parmis ces methodes, on va devoir dire qu'il faut qu'un utilisateur soit authentifié pour pouvoir executé certaines methodes 
+## Comment 
+- créer une annotation @Auth qi dit qu'une methode a besoin d'authentification
+- si une methode est annoté @Auth : verifier dans session si authentifié ou pas 
+- si non : les methodes s'execute normalement 
+- à chaque fois une methode annoté @Auth
+     - vérifier si il existe nom variable session
+     - comment reconnaitre le nom des variables à vérifier?
+          - nom de variable pour verifier si la session de l'utilisateur est authentifié 
+          - donner des informations au framework : 
+               - soit par convention
+               - soit par configuration
+     - par configuration : 
+          - quelque part : donner le nom de variable de la session à vérifier 
+          - dans web.xml : 
+               - defintion de frontServlet
+               - ajouter init param 
+          - donc donner le nom de variable session à verifier si connecté 
+          - si dans l'annotation d'une methode 
+               - on donne le param dans web.xml
+               - pour recuperer le param : 1 fois 
+                    - dans la methode init()
+               - mettre dans servlet context : le meme pour chaque session
+     - cote developpeur : 
+          - verifier si un utilisateur est authentifié 
+          - mettre un setAttribut nom du variable :
+               - ex : isOut
+
+1. Créer l'annotation @Auth
+
+2. Configurer web.xml
+- ajouter dans la declaration de FrontController le parametre sessionAttribute 
+- Le paramètre sessionAuthAttribute indique donc au framework de vérifier l'existence de l'attribut de session utilisateur.
+
+3. Compléter init() dans FrontControllerServlet 
+- Recuperer le parametre de configuration
+- stocker la valeur dans le servletContext 
+
+4. reperer l'endroit ou ajouter la verification
+- dans ProcessRequest():
+     - repérer l'endroit où on appelle la méthode du contrôleur avec la réflexion Java
+     - ajouter la verification de l'authentification
+     
+5. Creer une methode protegee 
+     - dans LoginController : afficherProfil(session)
+         
+
+# Sprint 10 bis 
+## Quoi ?
+- authentifié + un role specifique pour pouvoir executer certaines methodes 
+- ex : role admin et directeur pour pouvoir executer une methode 
+
+## Comment ?
+- cote developpeur : 
+     - ex : 
+          - attribuer une droit d'execution de methode pour un role : admin
+          - et certaine methode si authentifié suffit
+          - une autre methode : role admin et directeur 
+     - libre pour decider les acces des roles 
+- cote framework : 
+- creer classe User : 
+     - attribut tableau de String : liste des roles 
+          - arrivé dans session : nom de variable dans session?
+- mettre dans configuration le nom de variable dans session 
+- pas obliger de creer la classe User 
+     - on a besoin du profil de l'utilisateur connecté et mettre dans session 
+     - ajouter parametre pour mettre le role et 
+     - verifier dans session si il existe 
+          - si oui
+               - recuperer la valeur et recuperer avec celle dans l'annotation donc + variable : contient le role
+     - si methode annoté @Auth cote framework : 
+          - verifier dans session le nom de la variable si il existe
+               - si oui : connecté 
+               - si non : pas connecté
+     - on peut mettre plusieurs roles 
+     - cote framework :
+          - si annoté :
+               - verifier si la variable est dans le parametre 
+               - si il existe : recuperer la variable et verifier si elle existe dans la session ou pas 
+                    - si oui : 
+                         - recuperer et comparer par rapport à la valeur annotation 
+                         - si existe : executer  
