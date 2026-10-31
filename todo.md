@@ -421,3 +421,6 @@ pas dans init mais dans le listener
 1. Faire evoluer l'annotation @Auth
 - ajouter un attribut roles de type tableau de chaines de caracteres
 
+2. Configurer le nom de l'attibut qui contient les roles 
+- dans web.xml de test, ajouter un deuxième init-param contenant le nom de l'attribut 
+
